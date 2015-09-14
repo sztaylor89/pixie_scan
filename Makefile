@@ -15,19 +15,10 @@ PULSEFIT = 1
 # Define to use Gamma-Gamma gates in GeProcessor
 # GGATES = 1
 
-# Use gfortran
+# We'll do some tests here to find if environment variables have been set
 ifeq ($(HHIRF_GFORTRAN),)
 HHIRF_GFORTRAN = 1
 endif
-
-#------- instruct make to search through these
-#------- directories to find files
-vpath %.f scan/
-vpath %.hpp include/
-vpath %.h include/
-vpath %.icc include/
-vpath %.cpp src/
-vpath %.o obj/
 
 ifeq ($(HHIRF_DIR),)
 HHIRF_DIR = /usr/hhirf
@@ -44,6 +35,21 @@ ACQ2_LIBDIR = /usr/acq2/lib
 endif
 endif
 endif
+
+ifneq ($(EXTRA_PROCESSORS),)
+vpath %.cpp $(EXTRA_PROCESSORS)/src
+vpath %.hpp $(EXTRA_PROCESSORS)/inc
+CINCLUDEDIRS = -I$(EXTRA_PROCESSORS)/inc
+endif
+
+#------- instruct make to search through these
+#------- directories to find files
+vpath %.f scan/
+vpath %.hpp include/
+vpath %.h include/
+vpath %.icc include/
+vpath %.cpp src/
+vpath %.o obj/
 
 LIBS = $(HHIRF_DIR)/scanorlib.a $(HHIRF_DIR)/orphlib.a \
        $(ACQ2_LIBDIR)/acqlib.a  $(ACQ2_LIBDIR)/ipclib.a
@@ -70,6 +76,9 @@ GCC       = gcc
 CXX       = g++
 LINK.o    = $(FC) $(LDFLAGS)
 
+#------- include directories for the pixie c files
+CINCLUDEDIRS += -Iinclude
+
 # -Dnewreadout is needed to account for a change to pixie16 readout
 # structure change on 03/20/08.  Remove for backwards compatability
 #
@@ -83,9 +92,6 @@ CXXFLAGS += -Wall -g -fPIC $(CINCLUDEDIRS) -Dnewreadout
 ifdef ONLINE
 CXXFLAGS += -DONLINE
 endif
-
-#------- include directories for the pixie c files
-CINCLUDEDIRS  = -Iinclude
 
 #------- basic linking instructions
 LDLIBS   += -lm -lstdc++
