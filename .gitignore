@@ -7,6 +7,7 @@ pixie_ldf_*
 *~
 *.swp
 *.layout
+*#*
 
 #Documentation directories and files
 html/
@@ -16,6 +17,11 @@ doc/classdiagramRawEvent.svg
 config/cfgs
 optional
 ValgrindOut.xml
+
+#Compressed Files
+*.bz2
+*.tgz
+*.tar.gz
 
 #DAMM files
 *.drr

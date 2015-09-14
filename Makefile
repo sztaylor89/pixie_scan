@@ -36,19 +36,13 @@ endif
 endif
 endif
 
-ifneq ($(EXTRA_PROCESSORS),)
-vpath %.cpp $(EXTRA_PROCESSORS)/src
-vpath %.hpp $(EXTRA_PROCESSORS)/inc
-CINCLUDEDIRS = -I$(EXTRA_PROCESSORS)/inc
-endif
-
 #------- instruct make to search through these
 #------- directories to find files
 vpath %.f scan/
-vpath %.hpp include/
+vpath %.hpp include/:include/experiment
 vpath %.h include/
 vpath %.icc include/
-vpath %.cpp src/
+vpath %.cpp src/analyzers:src/core:src/experiment:src/processors
 vpath %.o obj/
 
 LIBS = $(HHIRF_DIR)/scanorlib.a $(HHIRF_DIR)/orphlib.a \
@@ -109,115 +103,8 @@ LDFLAGS += -g77libs
 LDLIBS	+= -lg2c
 endif
 
-#-------- define file variables -----------------------
-# objects from fortran
-SET2CCO          = set2cc.$(ObjSuf)
-MESSLOGO         = messlog.$(ObjSuf)
-MILDATIMO        = mildatim.$(ObjSuf)
-SCANORO          = scanor.$(ObjSuf)
-
-#XML parser
-PUGIXMLO = pugixml.$(ObjSuf)
-
-# objects from cpp
-PIXIEO           = PixieStd.$(ObjSuf)
-
-# ReadBufData
-READBUFFDATADFO    = ReadBuffData.RevD.$(ObjSuf)
-READBUFFDATAAO    = ReadBuffData.RevA.$(ObjSuf)
-
-BARDETECTORO     = BarDetector.$(ObjSuf)
-BARBUILDERO      = BarBuilder.$(ObjSuf)
-BEAMLOGICPROCESSORO  = BeamLogicProcessor.$(ObjSuf)
-BETASCINTPROCESSORO  = BetaScintProcessor.$(ObjSuf)
-CALIBRATORO      = Calibrator.$(ObjSuf)
-CFDANALYZERO     = CfdAnalyzer.$(ObjSuf)
-CHANEVENTO       = ChanEvent.$(ObjSuf)
-CORRELATORO      = Correlator.$(ObjSuf)
-DETECTORDRIVERO  = DetectorDriver.$(ObjSuf)
-DETECTORLIBRARYO = DetectorLibrary.$(ObjSuf)
-DETECTORSUMMARYO = DetectorSummary.$(ObjSuf)
-DOUBLETRACEO     = DoubleTraceAnalyzer.$(ObjSuf)
-DOUBLEBETAPROCESSORO = DoubleBetaProcessor.$(ObjSuf)
-DSSDPROCESSORO   = DssdProcessor.$(ObjSuf)
-EVENTPROCESSORO  = EventProcessor.$(ObjSuf)
-FITTINGANALYZERO = FittingAnalyzer.$(ObjSuf)
-GEPROCESSORO     = GeProcessor.$(ObjSuf)
-GECALIBPROCESSORO= GeCalibProcessor.$(ObjSuf)
-GLOBALSO         = Globals.$(ObjSuf)
-HEN3PROCESSORO   = Hen3Processor.$(ObjSuf)
-HIGHRESTIMINGDATAO = HighResTimingData.$(ObjSuf)
-IDENTIFIERO  = Identifier.$(ObjSuf)
-ISSDPROCESSORO   = ImplantSsdProcessor.$(ObjSuf)
-INITIALIZEO      = Initialize.$(ObjSuf)
-IONCHAMBERPROCESSORO = IonChamberProcessor.$(ObjSuf)
-LIQUIDSCINTPROCESSORO = LiquidScintProcessor.$(ObjSuf)
-LOGICPROCESSORO  = LogicProcessor.$(ObjSuf)
-MESSENGERO       = Messenger.$(ObjSuf)
-MCPPROCESSORO    = McpProcessor.$(ObjSuf)
-MTCPROCESSORO    = MtcProcessor.$(ObjSuf)
-NEUTRONSCINTPROCESSORO  = NeutronScintProcessor.$(ObjSuf)
-NOTEBOOKO		 = Notebook.$(ObjSuf)
-PLOTSO           = Plots.$(ObjSuf)
-PLOTSREGISTERO   = PlotsRegister.$(ObjSuf)
-POSITIONPROCESSORO = PositionProcessor.$(ObjSuf)
-RANDOMPOOLO      = RandomPool.$(ObjSuf)
-RAWEVENTO        = RawEvent.$(ObjSuf)
-ROOTPROCESSORO   = RootProcessor.$(ObjSuf)
-PLACEBUILDERO    = PlaceBuilder.$(ObjSuf)
-PLACESO          = Places.$(ObjSuf)
-PULSERPROCESSORO = PulserProcessor.$(ObjSuf)
-SSDPROCESSORO    = SsdProcessor.$(ObjSuf)
-STATSDATAO       = StatsData.$(ObjSuf)
-TAUANALYZERO     = TauAnalyzer.$(ObjSuf)
-TEENYVANDLEPROCESSORO = TeenyVandleProcessor.$(ObjSuf)
-TIMINGCALO		 = TimingCalibrator.$(ObjSuf)
-TIMINGMAPBUILDERO = TimingMapBuilder.$(ObjSuf)
-TRIGGERLOGICPROCESSORO = TriggerLogicProcessor.$(ObjSuf)
-TRACEO           = Trace.$(ObjSuf)
-TRACEEXTRACTORO  = TraceExtractor.$(ObjSuf)
-TRACEFILTERO     = TraceFilterer.$(ObjSuf)
-TRACESUBO        = TraceAnalyzer.$(ObjSuf)
-TREECORRELATORO  = TreeCorrelator.$(ObjSuf)
-VANDLEPROCESSORO = VandleProcessor.$(ObjSuf)
-VANDLEROOTO      = VandleROOT.$(ObjSuf)
-WALKCORRECTORO   = WalkCorrector.$(ObjSuf)
-WAVEFORMSUBO     = WaveformAnalyzer.$(ObjSuf)
-
-#----- list of objects
-# Fortran objects
-FORT_OBJS = $(SET2CCO) $(MESSLOGO) $(MILDATIMO) $(SCANORO)
-
-# Important to compile READBUFFDATA first
-CXX_OBJS = $(READBUFFDATAAO) $(READBUFFDATADFO)
-
-# Core Objects
-CXX_OBJS += $(PUGIXMLO) $(PIXIEO) $(BARBUILDERO) $(BARDETECTORO) $(CALIBRATORO)\
-	$(CORRELATORO) $(CHANEVENTO) $(DETECTORDRIVERO) $(DETECTORLIBRARYO)\
-	$(DETECTORSUMMARYO) $(EVENTPROCESSORO) $(GLOBALSO) $(IDENTIFIERO) \
-	$(INITIALIZEO) $(MESSENGERO) $(NOTEBOOKO) $(RANDOMPOOLO) $(RAWEVENTO)\
-	$(STATSDATAO) $(TIMINGCALO) $(TIMINGMAPBUILDERO) $(WALKCORRECTORO)
-
-#Correlation Objects
-CXX_OBJS += $(PLACEBUILDERO) $(PLACESO) $(TREECORRELATORO)
-
-#Plotting Related Objects
-CXX_OBJS += $(HISTOGRAMMERO) $(PLOTSO) $(PLOTSREGISTERO)
-
-#Trace Related Objects
-CXX_OBJS += $(CFDANALYZERO) $(DOUBLETRACEO) $(FITTINGANALYZERO)\
-	$(HIGHRESTIMINGDATA) $(TAUANALYZERO) $(TRACEO)\
-	$(TRACEEXTRACTORO) $(TRACEFILTERO) $(TRACESUBO) $(WAVEFORMSUBO)
-
-#Processors
-CXX_OBJS += $(BEAMLOGICPROCESSORO) $(BETASCINTPROCESSORO)\
-	$(DSSDPROCESSORO) $(DOUBLEBETAPROCESSORO) $(GEPROCESSORO)\
-	$(GECALIBPROCESSORO) $(HEN3PROCESSORO)\
-	$(ISSDPROCESSORO) $(IONCHAMBERPROCESSORO) $(LIQUIDSCINTPROCESSORO)\
-	$(LOGICPROCESSORO) $(MCPPROCESSORO) $(MTCPROCESSORO)\
-	$(NEUTRONSCINTPROCESSORO) $(POSITIONPROCESSORO) $(PULSERPROCESSORO)\
-	$(SSDPROCESSORO) $(TEENYVANDLEPROCESSORO) $(TRIGGERLOGICPROCESSORO)\
-	$(VANDLEPROCESSORO)
+#---------- Include the list of objects
+include Makefile.objs
 
 #---------- Change the executable name if necessary
 ifdef ONLINE
@@ -249,9 +136,10 @@ CXXFLAGS	+= -DDEBUG
 endif
 
 #---------- Update some information about the object files
-FORT_OBJDIR = obj/fortran
+OBJDIR = ./obj
+FORT_OBJDIR = $(OBJDIR)/fortran
 FORT_OBJS_W_DIR = $(addprefix $(FORT_OBJDIR)/,$(FORT_OBJS))
-CXX_OBJDIR = obj/c++
+CXX_OBJDIR = $(OBJDIR)/c++
 CXX_OBJS_W_DIR = $(addprefix $(CXX_OBJDIR)/,$(CXX_OBJS))
 
 #--------- Add to list of known file suffixes
@@ -283,10 +171,10 @@ $(PIXIE): $(FORT_OBJS_W_DIR) $(CXX_OBJS_W_DIR) $(LIBS)
 .PHONY: clean tidy doc
 clean:
 	@echo "Cleaning up..."
-	@rm -f ./$(FORT_OBJDIR)/*.o ./$(CXX_OBJDIR)/*.o $(PIXIE) core *~ *.save \
-	src/*~ include/*~ scan/*~
+	@rm -rf ./$(OBJDIR) $(PIXIE) ./core ./*~ ./*.save \
+	./src/*~ ./include/*~ ./scan/*~ 
 tidy:
 	@echo "Tidying up..."
-	@rm -f core *~ ./src/*~ ./include/*~ ./scan/*~ *.save
+	@rm -f ./core ./*~ ./src/*~ ./include/*~ ./scan/*~ ./*.save
 doc: doc/Doxyfile
 	@doxygen $^
