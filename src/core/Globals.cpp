@@ -218,9 +218,14 @@ Globals::Globals() {
                     it->child("Beta").attribute("value").as_double();
                 singleBetaPars_.second =
                     it->child("Gamma").attribute("value").as_double();
-            }else if(std::string(it->name()).compare("DoubleBeta") == 0) {
-                doubleBetaPars_.first = 0.0;
-                doubleBetaPars_.second =
+            }else if(std::string(it->name()).compare("DoubleBetaTiming") == 0) {
+                doubleBetaTimingPars_.first = 0.0;
+                doubleBetaTimingPars_.second =
+                    it->child("Gamma").attribute("value").as_double();
+	    }else if (std::string(it->name()).compare("DoubleBetaEnergy") == 0) {
+                doubleBetaEnergyPars_.first =
+                    it->child("Beta").attribute("value").as_double();
+                doubleBetaEnergyPars_.second =
                     it->child("Gamma").attribute("value").as_double();
             }else if (std::string(it->name()).compare("Pulser") == 0) {
                 pulserPars_.first =

@@ -206,8 +206,10 @@ public:
     std::pair<double,double> bigVandlePars() {return(bigVandlePars_);}
     /** \return the Single Beta detector fitting parameters */
     std::pair<double,double> singleBetaPars() {return(singleBetaPars_);}
-    /** \return the Double Beta detector fitting parameters */
-    std::pair<double,double> doubleBetaPars() {return(doubleBetaPars_);}
+    /** \return the Double Beta detector Timing fitting parameters */
+    std::pair<double,double> doubleBetaTimingPars() {return(doubleBetaTimingPars_);}
+    /** \return the Double Beta detector Energy fitting parameters */
+    std::pair<double,double> doubleBetaEnergyPars() {return(doubleBetaEnergyPars_);}
     /** \return the Pulser fitting parameters */
     std::pair<double,double> pulserPars() {return(pulserPars_);}
     /** \return the Teeny-VANDLE fitting parameters */
@@ -281,7 +283,8 @@ private:
     std::pair<double,double> mediumVandlePars_;//!< medium VANDLE parameters for fitting
     std::pair<double,double> bigVandlePars_;//!< big VANDLE parameters for fitting
     std::pair<double,double> singleBetaPars_;//!< Single Beta parameters for fitting
-    std::pair<double,double> doubleBetaPars_;//!< Double Beta parameters for fitting
+    std::pair<double,double> doubleBetaTimingPars_;//!< Double BetaTiming  parameters for fitting
+    std::pair<double,double> doubleBetaEnergyPars_;//!< Double BetaTiming  parameters for fitting
     std::pair<double,double> pulserPars_;//!< Pulser parameters for fitting
     std::pair<double,double> tvandlePars_;//!< Teeny-VANDEL parameters for fitting.
     std::pair<double,double> liquidScintPars_;//!< liquid scint pars for fitting

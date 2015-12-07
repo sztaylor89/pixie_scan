@@ -77,9 +77,9 @@ Anl1471Processor::Anl1471Processor(const std::vector<std::string> &typeList,
     stringstream name;
     name << temp;
     fileName_ = name.str();
-    fileNames_.push_back(fileName_ + "-tof-sm.dat");
-    fileNames_.push_back(fileName_ + "-tof-md.dat");
-    fileNames_.push_back(fileName_ + "-tof-04Plus.dat");
+    fileNames_.push_back(fileName_ + "-tof.dat");
+    fileNames_.push_back(fileName_ + "-tof-gamma.dat");
+   
 }
 
 bool Anl1471Processor::Process(RawEvent &event) {
@@ -87,6 +87,9 @@ bool Anl1471Processor::Process(RawEvent &event) {
         return(false);
     if(!VandleProcessor::Process(event))
         return(false);
+    ofstream outTOF(fileNames_[0].c_str(),ios::app);
+    //add gamma one here later
+    int bar_type;
 
     for (BarMap::iterator it = bars_.begin(); it !=  bars_.end(); it++) {
         TimingDefs::TimingIdentifier barId = (*it).first;
@@ -97,12 +100,18 @@ bool Anl1471Processor::Process(RawEvent &event) {
         unsigned int barLoc = barId.first;
         TimingCalibration cal = bar.GetCalibration();
 
-        int bananaNum;
-	if(bar.GetType() == "small")
-	    bananaNum = 2;
-	if(bar.GetType() == "medium")
-	    bananaNum = 1;
 
+	
+
+        int bananaNum;
+	if(bar.GetType() == "small"){
+	    bananaNum = 2;
+	    bar_type = 0;
+	}
+	if(bar.GetType() == "medium"){
+	    bananaNum = 1;
+	    bar_type = 1;
+	}
         for(BarMap::iterator itStart = barStarts_.begin();
         itStart != barStarts_.end(); itStart++) {
             BarDetector start = (*itStart).second;
@@ -116,21 +125,13 @@ bool Anl1471Processor::Process(RawEvent &event) {
             double corTof =
                 VandleProcessor::CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
 
+	    outTOF << corTof << " " << bar.GetQdc() << " " << bar_type << " " 
+		   << barLoc << " " << start.GetQdc() << " " << startLoc << endl;
+
+
             bool inPeel = histo.BananaTest(bananaNum,
                                            corTof*plotMult_+plotOffset_,
                                            bar.GetQdc());
-	    //All of them are gated using a banana gate
-            if(inPeel) {
-		ofstream data;
-		if(bar.GetType() == "small") {
-                    data.open(fileNames_[0].c_str(), ios::app);
-                    data << corTof << " " << bar.GetQdc() << endl;
-                } else {
-		    data.open(fileNames_[1].c_str(), ios::app);
-                    data << corTof << " " << bar.GetQdc() << endl;
-		}
-		data.close();
-            }
 
             double cycleTime = TreeCorrelator::get()->place("Cycle")->last().time;
             cycleTime *= (Globals::get()->clockInSeconds()*1.e9);
@@ -152,6 +153,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
             }//geSummary_->GetMult() > 0
         }//loop over starts
     }//loop over bars
+    outTOF.close();
     EndProcess();
     return(true);
 }

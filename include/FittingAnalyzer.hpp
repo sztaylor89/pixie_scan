@@ -27,7 +27,7 @@ public:
      * \param [in] detType : the detector type we have
      * \param [in] detSubtype : the subtype of the detector */
     virtual void Analyze(Trace &trace, const std::string &detType,
-                         const std::string &detSubtype);
+                         const std::string &detSubtype, const std::string &tag);//@@@@@@@@@@@@@
 
     /** \return the walk of the specified channel due to the fitting function
      * \param [in] val : The Maximum Value in the trace

@@ -43,6 +43,7 @@
 #include "TriggerLogicProcessor.hpp"
 #include "VandleProcessor.hpp"
 #include "ValidProcessor.hpp"
+#include "Anl1471Processor.hpp"
 
 #include "CfdAnalyzer.hpp"
 #include "DoubleTraceAnalyzer.hpp"
@@ -251,13 +252,19 @@ void DetectorDriver::LoadProcessors(Messenger& m) {
             vecProcess.push_back(new SsdProcessor());
         } else if (name == "TriggerLogicProcessor") {
             vecProcess.push_back(new TriggerLogicProcessor());
-        } else if (name == "VandleProcessor") {
+        } else if (name == "VandleProcessor" || name=="Anl1471Processor") {
             double res = processor.attribute("res").as_double(2.0);
             double offset = processor.attribute("offset").as_double(200.0);
             unsigned int numStarts = processor.attribute("NumStarts").as_int(2);
             vector<string> types =
                 strings::tokenize(processor.attribute("types").as_string(),",");
-            vecProcess.push_back(new VandleProcessor(types, res, offset, numStarts));
+            
+	    if (name == "VandleProcessor")
+	    vecProcess.push_back(new VandleProcessor(types, res, offset, numStarts));
+	    if (name == "Anl1471Processor")
+	    vecProcess.push_back(new Anl1471Processor(types, res, offset, numStarts));
+
+
         } else if (name == "TeenyVandleProcessor") {
             vecProcess.push_back(new TeenyVandleProcessor());
         } else if (name == "DoubleBetaProcessor") {
