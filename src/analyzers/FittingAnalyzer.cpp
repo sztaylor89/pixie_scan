@@ -122,7 +122,8 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     const double qdc = trace.GetValue("tqdc");
     const unsigned int maxPos = (unsigned int)trace.GetValue("maxpos");
     const vector<double> waveform = trace.GetWaveform();
-
+    const bool isEnergySignal = tagMap.find("energy") != tagMap.end();
+    const bool isTimingSignal = tagMap.find("timing") != tagMap.end();
     if(waveform.size() == 0) {
         EndAnalyze();
         return;
@@ -153,9 +154,9 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     } else if (detType == "beta" || detType == "beta_scint") {//********************************
         if(detSubtype == "single" || detSubtype == "beta")
             pars = globals->singleBetaPars();
-        else if(detSubtype == "double" && tags == "energy")
+        else if(detSubtype == "double" && isEnergySignal)
             pars = globals->doubleBetaEnergyPars();
-	else if(detSubtype == "double" && tags == "timing")
+	else if(detSubtype == "double" && isTimingSignal)
 	  pars = globals->doubleBetaTimingPars();
     } else if(detType == "tvandle"){
         pars = globals->tvandlePars();
@@ -220,7 +221,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     }
     */
 
-    if(detType == "beta" && detSubtype == "double" && tags == "timing") {
+    if(detType == "beta" && detSubtype == "double" && isTimingSignal) {
               numParams = 1;
         covar = gsl_matrix_alloc (numParams, numParams);
         xInit[0] = (double)globals->siPmtWaveformRange().first;
@@ -233,7 +234,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 
         s = gsl_multifit_fdfsolver_alloc (T, sizeFit, numParams);
 
-    } else if(detType == "beta" && detSubtype == "double" && tags == "energy")  {
+    } else if(detType == "beta" && detSubtype == "double" && isEnergySignal)  {
        numParams = 2;
         covar = gsl_matrix_alloc (numParams, numParams);//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         xInit[0] = 0.0; xInit[1]=2.5;
@@ -285,7 +286,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     }
     */
 
-    if(detType == "beta" && detSubtype == "double" && tags == "timing") {//*******************************
+    if(detType == "beta" && detSubtype == "double" && isTimingSignal) {//*******************************
        phase = gsl_vector_get(s->x,0);
         fitAmp = 0.0;
     } else {
