@@ -105,7 +105,7 @@ FittingAnalyzer::FittingAnalyzer() {
 }
 
 void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
-			      const std::string &detSubtype, const std::string &tag) {
+			      const std::string &detSubtype, const std::string &tags) {
     TraceAnalyzer::Analyze(trace, detType, detSubtype);
 
     if(trace.HasValue("saturation") || trace.empty()) {
@@ -151,13 +151,13 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     } else if (detType == "beta" || detType == "beta_scint") {//********************************
         if(detSubtype == "single" || detSubtype == "beta")
             pars = globals->singleBetaPars();
-        else if(detSubtype == "double" && tag == "energy")
+        else if(detSubtype == "double" && tags == "energy")
             pars = globals->doubleBetaEnergyPars();
-	else if(detSubtype == "double" && tag == "timing")
+	else if(detSubtype == "double" && tags == "timing")
 	  pars = globals->doubleBetaTimingPars();
-    } else if(detType == "tvandle")
+    } else if(detType == "tvandle"){
         pars = globals->tvandlePars();
-    else if (detType =="labr3") {
+    }else if (detType =="labr3") {
       if(detSubtype == "r6231_100")
         pars = globals->labr3_r6231_100Pars();
       if(detSubtype == "r7724_100")
@@ -191,7 +191,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     f.n = sizeFit;
     f.params = &data;
 
-    /*    if(detType != "beta" && detSubtype != "double" && tag = "timing") {
+    /*    if(detType != "beta" && detSubtype != "double" && tags = "timing") {
         numParams = 2;
         covar = gsl_matrix_alloc (numParams, numParams);//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         xInit[0] = 0.0; xInit[1]=2.5;
@@ -218,7 +218,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     }
     */
 
-    if(detType == "beta" && detSubtype == "double" && tag == "timing") {
+    if(detType == "beta" && detSubtype == "double" && tags == "timing") {
               numParams = 1;
         covar = gsl_matrix_alloc (numParams, numParams);
         xInit[0] = (double)globals->siPmtWaveformRange().first;
@@ -231,7 +231,19 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 
         s = gsl_multifit_fdfsolver_alloc (T, sizeFit, numParams);
 
-    } else {
+    } else if(detType == "beta" && detSubtype == "double" && tags == "energy")  {
+       numParams = 2;
+        covar = gsl_matrix_alloc (numParams, numParams);//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        xInit[0] = 0.0; xInit[1]=2.5;
+        x = gsl_vector_view_array (xInit, numParams);
+
+        f.f = &SiPmtEnergyFunction;
+        f.df = &CalcSiPmtEnergyJacobian;
+        f.fdf = &SiPmtEnergyFunctionDerivative;
+        f.p = numParams;
+
+        s = gsl_multifit_fdfsolver_alloc (T, sizeFit, numParams);
+    } else{
       numParams = 2;
         covar = gsl_matrix_alloc (numParams, numParams);//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         xInit[0] = 0.0; xInit[1]=2.5;
@@ -271,13 +283,17 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     }
     */
 
-    if(detType == "beta" && detSubtype == "double" && tag == "timing") {//*******************************
+    if(detType == "beta" && detSubtype == "double" && tags == "timing") {//*******************************
        phase = gsl_vector_get(s->x,0);
         fitAmp = 0.0;
     } else {
        phase = gsl_vector_get(s->x,0);
         fitAmp = gsl_vector_get(s->x,1);
-    }
+    
+	//	std::cout << phase <<  " " << fitAmp << endl;
+
+
+}
     
 
     trace.InsertValue("phase", phase+maxPos);
@@ -336,6 +352,9 @@ int PmtFunction (const gsl_vector * x, void *FitData, gsl_vector * f) {
 
         gsl_vector_set (f, i, (Yi - y[i])/sigma[i]);
     }
+
+    std::cout<< "In fitting function for PMT\n\n";
+
     return(GSL_SUCCESS);
 }
 
@@ -447,6 +466,9 @@ int SiPmtEnergyFunction (const gsl_vector * x, void *FitData, gsl_vector * f) {
 
         gsl_vector_set (f, i, (Yi - y[i])/sigma[i]);
     }
+
+    std::cout << "I'm doing SiPM energy stuff\n";
+
     return(GSL_SUCCESS);
 }
 
