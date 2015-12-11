@@ -105,13 +105,15 @@ FittingAnalyzer::FittingAnalyzer() {
 }
 
 void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
-			      const std::string &detSubtype, const std::string &tags) {
-    TraceAnalyzer::Analyze(trace, detType, detSubtype);
-    std::cout << "GOT HERE!!!!!!!!!!!!!!!!!!!\n";
+			      const std::string &detSubtype,
+                              const std::map<std::string, int> & tagMap) {
+    TraceAnalyzer::Analyze(trace, detType, detSubtype, tagMap);
     if(trace.HasValue("saturation") || trace.empty()) {
      	EndAnalyze();
      	return;
     }
+
+    bool isDoubleBeta = detType == "beta" && detSubtype == "double";
 
     Globals *globals = Globals::get();
 
@@ -133,7 +135,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
         return;
     }
 
-    if(sigmaBaseline > globals->siPmtSigmaBaselineThresh() && detSubtype == "double") {
+    if(sigmaBaseline > globals->siPmtSigmaBaselineThresh() && isDoubleBeta) {
         EndAnalyze();
         return;
     }
