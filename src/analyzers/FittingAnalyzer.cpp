@@ -107,7 +107,7 @@ FittingAnalyzer::FittingAnalyzer() {
 void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 			      const std::string &detSubtype, const std::string &tags) {
     TraceAnalyzer::Analyze(trace, detType, detSubtype);
-
+    std::cout << "GOT HERE!!!!!!!!!!!!!!!!!!!\n";
     if(trace.HasValue("saturation") || trace.empty()) {
      	EndAnalyze();
      	return;
@@ -293,7 +293,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 	//	std::cout << phase <<  " " << fitAmp << endl;
 
 
-}
+    }
     
 
     trace.InsertValue("phase", phase+maxPos);
@@ -301,6 +301,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 
     trace.plot(DD_AMP, fitAmp, maxVal);
     trace.plot(D_PHASE, phase*1000+100);
+    std::cout<< phase << endl;
     trace.plot(D_CHISQPERDOF,
                pow(gsl_blas_dnrm2(s->f),2.0)/(sizeFit - numParams));
 

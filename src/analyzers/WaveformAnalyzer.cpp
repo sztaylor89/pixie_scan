@@ -34,14 +34,14 @@ void WaveformAnalyzer::Analyze(Trace &trace,
                                const std::string &detType,
                                const std::string &detSubtype) {
     TraceAnalyzer::Analyze(trace, detType, detSubtype);
-
+    
     if(CheckIfUnknown(detType) || trace.HasValue("saturation")){
         EndAnalyze();
         return;
     }
 
     Globals *globals = Globals::get();
-
+   
     pair<unsigned int, unsigned int> range = globals->waveformRange();
     if(detType == "beta" && detSubtype == "double")
         range = globals->siPmtWaveformRange();
@@ -54,8 +54,10 @@ void WaveformAnalyzer::Analyze(Trace &trace,
                             range.second+range.first);
 
     trace.InsertValue("qdcToMax", qdc/trace.GetValue("maxval"));
-
-    if(detSubtype == "liquid")
+    if(detType == "beta" && detSubtype == "double")
+    std::cout<< "^TYthnjtjmtmjym6ymj!" << qdc << endl;
+ 
+   if(detSubtype == "liquid")
         trace.DoDiscrimination(startDiscrimination,
                 range.second - startDiscrimination);
 
