@@ -271,7 +271,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     }
     */
 
-    if(detType == "beta" && detSubtype == "double") {//*******************************
+    if(detType == "beta" && detSubtype == "double" && tag == "timing") {//*******************************
        phase = gsl_vector_get(s->x,0);
         fitAmp = 0.0;
     } else {

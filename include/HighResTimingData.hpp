@@ -29,6 +29,9 @@ public:
             20*log10(trace_->GetValue("maxval") /
                      trace_->GetValue("sigmaBaseline"));
 
+	std::cout << trace_->GetValue("maxval") << " " << trace_->GetValue("phase") << " " << trace_->GetValue("tqdc") << " " << trace_->GetValue("sigmaBaseline") << std::endl; 
+
+
         if(!std::isnan(trace_->GetValue("maxval")) &&
            !std::isnan(trace_->GetValue("phase")) &&
            !std::isnan(trace_->GetValue("tqdc")) &&
