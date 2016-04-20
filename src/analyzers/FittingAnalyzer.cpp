@@ -292,10 +292,6 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     } else {
        phase = gsl_vector_get(s->x,0);
         fitAmp = gsl_vector_get(s->x,1);
-    
-	//	std::cout << phase <<  " " << fitAmp << endl;
-
-
     }
     
 
@@ -304,7 +300,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 
     trace.plot(DD_AMP, fitAmp, maxVal);
     trace.plot(D_PHASE, phase*1000+100);
-    std::cout<< phase << endl;
+
     trace.plot(D_CHISQPERDOF,
                pow(gsl_blas_dnrm2(s->f),2.0)/(sizeFit - numParams));
 
@@ -356,9 +352,6 @@ int PmtFunction (const gsl_vector * x, void *FitData, gsl_vector * f) {
 
         gsl_vector_set (f, i, (Yi - y[i])/sigma[i]);
     }
-
-    std::cout<< "In fitting function for PMT\n\n";
-
     return(GSL_SUCCESS);
 }
 
@@ -470,9 +463,6 @@ int SiPmtEnergyFunction (const gsl_vector * x, void *FitData, gsl_vector * f) {
 
         gsl_vector_set (f, i, (Yi - y[i])/sigma[i]);
     }
-
-    std::cout << "I'm doing SiPM energy stuff\n";
-
     return(GSL_SUCCESS);
 }
 

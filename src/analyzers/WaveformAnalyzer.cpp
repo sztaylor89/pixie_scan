@@ -55,8 +55,6 @@ void WaveformAnalyzer::Analyze(Trace &trace,
                             range.second+range.first);
 
     trace.InsertValue("qdcToMax", qdc/trace.GetValue("maxval"));
-    if(detType == "beta" && detSubtype == "double")
-    std::cout<< "^TYthnjtjmtmjym6ymj!" << qdc << endl;
  
    if(detSubtype == "liquid")
         trace.DoDiscrimination(startDiscrimination,
