@@ -53,10 +53,10 @@ void DoubleBetaProcessor::DeclarePlots(void) {
     DeclareHistogram2D(DD_QDCTDIFF3, SC, SC,"(Bar 6)TDiff vs. Coincident QDC");
     DeclareHistogram2D(DD_PP4, SC, SC,"Phase vs. Phase - Bar 7 Only");
     DeclareHistogram2D(DD_QDCTDIFF4, SC, SC,"(Bar 7)TDiff vs. Coincident QDC");
-    DeclareHistogram2D(DD_BETAWALK1, SC, SC,"Beta Walk Correction, QDC(bar 1) vs. TDIFF");
-    DeclareHistogram2D(DD_BETAWALK2, SC, SC,"Beta Walk Correction, QDC(bar 2) vs. TDIFF");
-    DeclareHistogram2D(DD_BETAWALK3, SC, SC,"Beta Walk Correction, QDC(bar 3) vs. TDIFF");
-    DeclareHistogram2D(DD_BETAWALK4, SC, SC,"Beta Walk Correction, QDC(bar 4) vs. TDIFF");
+    DeclareHistogram2D(DD_BETAWALK1, SC, SE,"Beta Walk Correction, QDC(bar 1) vs. TDIFF");
+    DeclareHistogram2D(DD_BETAWALK2, SC, SE,"Beta Walk Correction, QDC(bar 2) vs. TDIFF");
+    DeclareHistogram2D(DD_BETAWALK3, SC, SE,"Beta Walk Correction, QDC(bar 3) vs. TDIFF");
+    DeclareHistogram2D(DD_BETAWALK4, SC, SE,"Beta Walk Correction, QDC(bar 4) vs. TDIFF");
 }
 
 bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
@@ -87,7 +87,7 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF1, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
-	    if((*it).second.GetLeftSide().GetTraceQdc() > 750.0){
+	    if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
 	      plot(DD_BETAWALK1,  (*it).second.GetTimeDifference()*resolution+offset,
 		   (*it).second.GetRightSide().GetTraceQdc());
 	    }
@@ -98,7 +98,7 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
                         (*it).second.GetRightSide().GetPhase()*resolution);
              plot(DD_QDCTDIFF2, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
-	     if((*it).second.GetLeftSide().GetTraceQdc() > 500.0){
+	     if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
 	      plot(DD_BETAWALK2,  (*it).second.GetTimeDifference()*resolution+offset,
 		   (*it).second.GetRightSide().GetTraceQdc());
 	    }
@@ -108,7 +108,7 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF3, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
-	    if((*it).second.GetLeftSide().GetTraceQdc() > 750.0){
+	    if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
 	      plot(DD_BETAWALK3,  (*it).second.GetTimeDifference()*resolution+offset,
 		   (*it).second.GetRightSide().GetTraceQdc());
 	    }
@@ -119,7 +119,7 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
                         (*it).second.GetRightSide().GetPhase()*resolution);
              plot(DD_QDCTDIFF4, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
-	     if((*it).second.GetLeftSide().GetTraceQdc() > 300.0){
+	     if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
 	      plot(DD_BETAWALK4,  (*it).second.GetTimeDifference()*resolution+offset,
 		   (*it).second.GetRightSide().GetTraceQdc());
 	    }
