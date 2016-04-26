@@ -25,11 +25,14 @@ namespace dammIds {
         const int DD_QDCTDIFF3 = 8;//!< QDC vs. TDiff for your favorite bar (6), timing signals
         const int DD_PP4 = 9;//!< ID to plost the phase-phase for your favorite bar (7)
         const int DD_QDCTDIFF4 = 10;//!< QDC vs. TDiff for your favorite bar (7), energy signals
-      const int DD_BETAWALK1 = 11;//!< Walk Correction, QDC single side vs TDIFF (Bar 1)
+      /* const int DD_BETAWALK1 = 11;//!< Walk Correction, QDC single side vs TDIFF (Bar 1)
        const int DD_BETAWALK2 = 12;//!< Walk Correction, QDC single side vs TDIFF (Bar 2)
        const int DD_BETAWALK3 = 13;//!< Walk Correction, QDC single side vs TDIFF (Bar 3)
        const int DD_BETAWALK4 = 14;//!< Walk Correction, QDC single side vs TDIFF (Bar 4)
-    }
+      */
+        const int DD_PP5 = 15;//!< ID to plost the phase-phase for your favorite bar (1)
+        const int DD_QDCTDIFF5 = 16;//!< QDC vs. TDiff for your favorite bar (1), energy signals
+       }
 }
 
 using namespace std;
@@ -53,10 +56,16 @@ void DoubleBetaProcessor::DeclarePlots(void) {
     DeclareHistogram2D(DD_QDCTDIFF3, SC, SC,"(Bar 6)TDiff vs. Coincident QDC");
     DeclareHistogram2D(DD_PP4, SC, SC,"Phase vs. Phase - Bar 7 Only");
     DeclareHistogram2D(DD_QDCTDIFF4, SC, SC,"(Bar 7)TDiff vs. Coincident QDC");
+    DeclareHistogram2D(DD_PP5, SC, SC,"Phase vs. Phase - Bar 1 Only");
+    DeclareHistogram2D(DD_QDCTDIFF5, SC, SC,"(Bar 1)TDiff vs. Coincident QDC");
+    
+
+    /*
     DeclareHistogram2D(DD_BETAWALK1, SC, SE,"Beta Walk Correction, QDC(bar 1) vs. TDIFF");
     DeclareHistogram2D(DD_BETAWALK2, SC, SE,"Beta Walk Correction, QDC(bar 2) vs. TDIFF");
     DeclareHistogram2D(DD_BETAWALK3, SC, SE,"Beta Walk Correction, QDC(bar 3) vs. TDIFF");
     DeclareHistogram2D(DD_BETAWALK4, SC, SE,"Beta Walk Correction, QDC(bar 4) vs. TDIFF");
+    */
 }
 
 bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
@@ -87,45 +96,50 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF1, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
-	    if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
-	      plot(DD_BETAWALK1,  (*it).second.GetTimeDifference()*resolution+offset,
-		   (*it).second.GetRightSide().GetTraceQdc());
+	    //	    if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
+	    //plot(DD_BETAWALK1,  (*it).second.GetTimeDifference()*resolution+offset,
+	    //	   (*it).second.GetRightSide().GetTraceQdc());
 	    }
-        }
+        
 	
 	if(barNum == 5) {
 	     plot(DD_PP2, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
              plot(DD_QDCTDIFF2, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
-	     if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
-	      plot(DD_BETAWALK2,  (*it).second.GetTimeDifference()*resolution+offset,
-		   (*it).second.GetRightSide().GetTraceQdc());
+	     //if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
+	     //plot(DD_BETAWALK2,  (*it).second.GetTimeDifference()*resolution+offset,
+	     //	   (*it).second.GetRightSide().GetTraceQdc());
 	    }
-        }
+        
 	if(barNum == 6) {
             plot(DD_PP3, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF3, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
-	    if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
-	      plot(DD_BETAWALK3,  (*it).second.GetTimeDifference()*resolution+offset,
-		   (*it).second.GetRightSide().GetTraceQdc());
+	    //if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
+	    //plot(DD_BETAWALK3,  (*it).second.GetTimeDifference()*resolution+offset,
+	    //	   (*it).second.GetRightSide().GetTraceQdc());
 	    }
-        }
+        
 	
 	if(barNum == 7) {
 	     plot(DD_PP4, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
              plot(DD_QDCTDIFF4, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
-	     if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
-	      plot(DD_BETAWALK4,  (*it).second.GetTimeDifference()*resolution+offset,
-		   (*it).second.GetRightSide().GetTraceQdc());
+	     //if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
+	     //plot(DD_BETAWALK4,  (*it).second.GetTimeDifference()*resolution+offset,
+	     //	   (*it).second.GetRightSide().GetTraceQdc());
 	    }
-        }
+        
 
-
+        if(barNum == 1) {
+            plot(DD_PP5, (*it).second.GetLeftSide().GetPhase()*resolution,
+                        (*it).second.GetRightSide().GetPhase()*resolution);
+            plot(DD_QDCTDIFF5, (*it).second.GetTimeDifference()*resolution+offset,
+             (*it).second.GetLeftSide().GetTraceQdc());
+	}
     }
     return(true);
 }
