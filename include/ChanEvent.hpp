@@ -29,41 +29,53 @@ public:
      * ourselves
      * \param [in] a : the energy to set */
     void SetEnergy(double a) {energy = a;}
+
     /** Set the calibrated energy
      * \param [in] a : the calibrated energy */
     void SetCalEnergy(double a) {calEnergy = a;}
+
     /** Set the time
      * \param [in] a : the time to set */
     void SetTime(double a) {time = a;}
+
     /** Set the Walk corrected time
      * \param [in] a : the walk corrected time */
     void SetCorrectedTime(double a) { correctedTime = a;}
+
     /** Set the Calibrated time
      * \param [in] a : the calibrated time */
     void SetCalTime(double a) {calTime = a;}
+
     /** Set the high resolution time (Filter time + phase )
      * \param [in] a : the high resolution time */
     void SetHighResTime(double a) {highResTime =a;}
 
-    double GetEnergy() const      {
+    bool GetCfdSourceBit() const {
+	return(cfdTrigSource);
+    }
+    bool CfdForceTrig() const {
+	return(cfdForceTrig);
+    }
+
+    double GetEnergy() const {
         return energy;   /**< \return the raw energy */
     }
-    double GetCalEnergy() const   {
+    double GetCalEnergy() const {
         return calEnergy;   /**< \return the calibrated energy */
     }
     double GetCorrectedTime() const {
         return correctedTime;   /**< \return the corrected time */
     }
-    double GetTime() const        {
-        return time;   /**< \return the raw time */
+    double GetTime() const {
+        return time;   /**< \return the raw time in clock ticks*/
     }
-    double GetCalTime() const     {
+    double GetCalTime() const {
         return calTime;   /**< \return the calibrated time */
     }
     double GetHighResTime() const {
-        return highResTime;   /**< \return the high-resolution time */
+        return highResTime;   /**< \return the high-resolution time in ns*/
     }
-    double GetEventTime() const   {
+    double GetEventTime() const {
         return eventTime;   /**< \return the event time */
     }
     const Trace& GetTrace() const {
@@ -106,7 +118,6 @@ public:
     unsigned long GetQdcValue(int i) const;
 
     /** Channel event zeroing
-     *
      * All numerical values are set to -1, and the trace,
      * and traceinfo vectors are cleared and the channel
      * identifier is zeroed using its identifier::zeroid method. */
@@ -118,11 +129,11 @@ private:
                   function in the detector_driver.cpp */
     double calTime;            /**< Calibrated time, currently unused */
     double correctedTime;      /**< Energy-walk corrected time */
-    double highResTime;        /**< timing resolution less than 1 adc size */
+    double highResTime;        /**< timing resolution less than 1 adc sample */
     Trace trace;               /**< Channel trace if present */
-    pixie::word_t trigTime;    /**< The channel trigger time, trigger time and the lower 32 bits
-                  of the event time are not necessarily the same but could be
-                  separated by a constant value.*/
+    pixie::word_t trigTime;    /**< The channel trigger time, trigger time and the lower 
+				  32 bits of the event time are not necessarily the 
+				  same but could be separated by a constant value.*/
     pixie::word_t cfdTime;     /**< CFD trigger time in units of 1/256 pixie clock ticks */
     pixie::word_t eventTimeLo; /**< Lower 32 bits of pixie16 event time */
     pixie::word_t eventTimeHi; /**< Upper 32 bits of pixie16 event time */
@@ -134,21 +145,26 @@ private:
 
     double time;               /**< Raw channel time, 64 bit from pixie16 channel event time */
     double eventTime;          /**< The event time recorded by Pixie */
-    int    modNum;             /**< Module number */
-    int    chanNum;            /**< Channel number */
+    int modNum;             /**< Module number */
+    int chanNum;            /**< Channel number */
 
-    bool   virtualChannel;     /**< Flagged if generated virtually in Pixie DSP */
-    bool   pileupBit;          /**< Pile-up flag from Pixie */
-    bool   saturatedBit;       /**< Saturation flag from Pixie */
+    bool virtualChannel; /**< Flagged if generated virtually in Pixie DSP */
+    bool pileupBit;      /**< Pile-up flag from Pixie */
+    bool saturatedBit;   /**< Saturation flag from Pixie */
+    bool cfdForceTrig;   //!< CFD was forced to trigger
+    bool cfdTrigSource;  //!< The ADC that the CFD/FPGA synched with
 
-    void ZeroNums(void);       /**< Zero members which do not have constructors associated with them */
+    void ZeroNums(void); /**< Zero members which do not have constructors associated with them */
 
     /** Make the front end responsible for reading the data able to set the
      * channel data directly from ReadBuffDataA - REVISION A */
     friend int ReadBuffDataA(pixie::word_t *, unsigned long *, std::vector<ChanEvent *> &);
     /** Make the front end responsible for reading the data able to set the
-     * channel data directly from ReadBuffDataA - REVISION D and F */
-    friend int ReadBuffDataDF(pixie::word_t *, unsigned long *, std::vector<ChanEvent *> &);
+     * channel data directly from ReadBuffDataA - REVISION D */
+    friend int ReadBuffDataD(pixie::word_t *, unsigned long *, std::vector<ChanEvent *> &);
+    /** Make the front end responsible for reading the data able to set the
+     * channel data directly from ReadBuffDataA - REVISION F */
+    friend int ReadBuffDataF(pixie::word_t *, unsigned long *, std::vector<ChanEvent *> &);
 };
 
 /** Sort by increasing corrected time

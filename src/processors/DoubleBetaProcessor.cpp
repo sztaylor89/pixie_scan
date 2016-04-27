@@ -10,7 +10,7 @@
 #include "Globals.hpp"
 #include "RawEvent.hpp"
 #include "TimingMapBuilder.hpp"
-
+#include "TreeCorrelator.hpp"
 
 namespace dammIds {
     namespace doublebeta {
@@ -71,22 +71,28 @@ void DoubleBetaProcessor::DeclarePlots(void) {
 bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
     if (!EventProcessor::PreProcess(event))
         return(false);
-
+    
     static const vector<ChanEvent*> & events =
         event.GetSummary("beta:double")->GetList();
 
-    TimingMapBuilder singlesMap(events);
-    TimingMap sngls = singlesMap.GetMap();
-    for(TimingMap::iterator it = sngls.begin(); it != sngls.end(); it ++)
-        plot(DD_SINGLESQDC,(*it).second.GetTraceQdc(), (*it).first.first);
-
     BarBuilder builder(events);
-    betas_ = builder.GetBarMap();
+    builder.BuildBars();
+
+    map<unsigned int, pair<double,double> > lrtbars = builder.GetLrtBarMap();
+    BarMap betas = builder.GetBarMap();
 
     double resolution = 2;
     double offset = 1500;
 
-    for(BarMap::const_iterator it = betas_.begin(); it != betas_.end(); it++) {
+    for(map<unsigned int, pair<double,double> >::iterator it = lrtbars.begin();
+	it != lrtbars.end(); it++) {
+	stringstream place;
+	place << "DoubleBeta" << (*it).first;
+	EventData data((*it).second.first, (*it).second.second, (*it).first);
+	TreeCorrelator::get()->place(place.str())->activate(data);
+    }
+    
+    for(BarMap::const_iterator it = betas.begin(); it != betas.end(); it++) {
         unsigned int barNum = (*it).first.first;
         plot(DD_QDC, (*it).second.GetLeftSide().GetTraceQdc(), barNum * 2);
         plot(DD_QDC, (*it).second.GetRightSide().GetTraceQdc(), barNum * 2 + 1);

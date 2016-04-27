@@ -91,7 +91,9 @@ bool MakeModuleData(const word_t *data, unsigned long nWords,
  * */
 int ReadBuffDataA(word_t *lbuf, unsigned long *BufLen,
 		 vector<ChanEvent *> &eventList);
-int ReadBuffDataDF(word_t *lbuf, unsigned long *BufLen,
+int ReadBuffDataD(word_t *lbuf, unsigned long *BufLen,
+		 vector<ChanEvent *> &eventList);
+int ReadBuffDataF(word_t *lbuf, unsigned long *BufLen,
 		 vector<ChanEvent *> &eventList);
 /**
  * This function pointer will be initialized to point to
@@ -428,8 +430,10 @@ extern "C" void hissub_(unsigned short *ibuf[],unsigned short *nhw)
         string revision = Globals::get()->revision();
         // Initialize function pointer to point to
         // correct version of ReadBuffData
-        if (revision == "D" || revision == "F")
-            ReadBuffData = ReadBuffDataDF;
+	if(revision == "F")
+            ReadBuffData = ReadBuffDataF;
+        if (revision == "D" || revision == "DF")
+            ReadBuffData = ReadBuffDataD;
         else if (revision == "A")
             ReadBuffData = ReadBuffDataA;
 

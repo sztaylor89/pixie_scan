@@ -52,40 +52,20 @@ int PmtFunctionDerivative(const gsl_vector *x, void *FitData, gsl_vector *f,
  * \param [in] FitData : The data to use for the fit
  * \param [in] f : pointer to the function
  * \return an integer that GSL does something magical with */
-int SiPmtTimingFunction(const gsl_vector *x, void *FitData, gsl_vector *f);
+int SiPmtFunction(const gsl_vector *x, void *FitData, gsl_vector *f);
 /** Defines the GSL fitting function for the fast output SiPMTs
  * \param [in] x : the vector of gsl starting parameters
  * \param [in] FitData : The data to use for the fit
  * \param [in] J : pointer to the Jacobian of the function
  * \return an integer that GSL does something magical with */
-int CalcSiPmtTimingJacobian(const gsl_vector *x, void *FitData, gsl_matrix *J);
+int CalcSiPmtJacobian(const gsl_vector *x, void *FitData, gsl_matrix *J);
 /** Defines the GSL fitting function for the fast output of SiPMTs
  * \param [in] x : the vector of gsl starting parameters
  * \param [in] FitData : The data to use for the fit
  * \param [in] f : pointer to the function
  * \param [in] J : pointer to the Jacobian of the function
  * \return an integer that GSL does something magical with */
-int SiPmtTimingFunctionDerivative(const gsl_vector *x, void *FitData, gsl_vector *f,
-                          gsl_matrix *J);
-/** Defines the GSL fitting function for the slow output of SiPMTs
- * \param [in] x : the vector of gsl starting parameters
- * \param [in] FitData : The data to use for the fit
- * \param [in] f : pointer to the function
- * \return an integer that GSL does something magical with */
-int SiPmtEnergyFunction(const gsl_vector *x, void *FitData, gsl_vector *f);
-/** Defines the GSL fitting function for the slow output SiPMTs
- * \param [in] x : the vector of gsl starting parameters
- * \param [in] FitData : The data to use for the fit
- * \param [in] J : pointer to the Jacobian of the function
- * \return an integer that GSL does something magical with */
-int CalcSiPmtEnergyJacobian(const gsl_vector *x, void *FitData, gsl_matrix *J);
-/** Defines the GSL fitting function for the slow output of SiPMTs
- * \param [in] x : the vector of gsl starting parameters
- * \param [in] FitData : The data to use for the fit
- * \param [in] f : pointer to the function
- * \param [in] J : pointer to the Jacobian of the function
- * \return an integer that GSL does something magical with */
-int SiPmtEnergyFunctionDerivative(const gsl_vector *x, void *FitData, gsl_vector *f,
+int SiPmtFunctionDerivative(const gsl_vector *x, void *FitData, gsl_vector *f,
                           gsl_matrix *J);
 
 using namespace std;
@@ -108,12 +88,12 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 			      const std::string &detSubtype,
                               const std::map<std::string, int> & tagMap) {
     TraceAnalyzer::Analyze(trace, detType, detSubtype, tagMap);
-    if(trace.HasValue("saturation") || trace.empty()) {
+
+    if(trace.HasValue("saturation") || trace.empty() || 
+       trace.GetWaveform().size() == 0) {
      	EndAnalyze();
      	return;
     }
-
-    bool isDoubleBeta = detType == "beta" && detSubtype == "double";
 
     Globals *globals = Globals::get();
 
@@ -122,53 +102,26 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     const double qdc = trace.GetValue("tqdc");
     const unsigned int maxPos = (unsigned int)trace.GetValue("maxpos");
     const vector<double> waveform = trace.GetWaveform();
-    const bool isEnergySignal = tagMap.find("energy") != tagMap.end();
-    const bool isTimingSignal = tagMap.find("timing") != tagMap.end();
-    if(waveform.size() == 0) {
-        EndAnalyze();
-        return;
-    }
+    bool isDblBeta = detType == "beta" && detSubtype == "double";
+    bool isDblBetaT = isDblBeta && tagMap.find("timing") != tagMap.end();
 
     trace.plot(D_SIGMA, sigmaBaseline*100);
 
-    if(sigmaBaseline > globals->sigmaBaselineThresh() && detSubtype != "double") {
-        EndAnalyze();
-        return;
+    if(!isDblBetaT) {
+	if(sigmaBaseline > globals->sigmaBaselineThresh()) {
+	    EndAnalyze();
+	    return;
+	}
+    } else {
+	if(sigmaBaseline > globals->siPmtSigmaBaselineThresh()) {
+	    EndAnalyze();
+	    return;
+	}
     }
-
-    if(sigmaBaseline > globals->siPmtSigmaBaselineThresh() && isDoubleBeta) {
-        EndAnalyze();
-        return;
-    }
-
-    pair<double,double> pars;
-    if (detType == "vandle") {
-        if(detSubtype == "small")
-            pars = globals->smallVandlePars();
-        else if(detSubtype == "medium")
-            pars = globals->mediumVandlePars();
-        else if(detSubtype == "big")
-            pars = globals->bigVandlePars();
-        else
-            pars = globals->smallVandlePars();
-    } else if (detType == "beta" || detType == "beta_scint") {//********************************
-        if(detSubtype == "single" || detSubtype == "beta")
-            pars = globals->singleBetaPars();
-        else if(detSubtype == "double" && isEnergySignal)
-            pars = globals->doubleBetaEnergyPars();
-	else if(detSubtype == "double" && isTimingSignal)
-	  pars = globals->doubleBetaTimingPars();
-    } else if(detType == "tvandle"){
-        pars = globals->tvandlePars();
-    }else if (detType =="labr3") {
-      if(detSubtype == "r6231_100")
-        pars = globals->labr3_r6231_100Pars();
-      if(detSubtype == "r7724_100")
-        pars = globals->labr3_r7724_100Pars();
-    } else if(detType == "pulser")
-        pars = globals->pulserPars();
-    else
-        pars = globals->smallVandlePars();
+	
+    pair<double,double> pars =  globals->fitPars(detType+":"+detSubtype);
+    if(isDblBetaT)
+	pars = globals->fitPars(detType+":"+detSubtype+":timing");
 
     const gsl_multifit_fdfsolver_type *T = gsl_multifit_fdfsolver_lmsder;
     gsl_multifit_fdfsolver *s;
@@ -194,9 +147,9 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     f.n = sizeFit;
     f.params = &data;
 
-    /*    if(detType != "beta" && detSubtype != "double" && tags = "timing") {
+    if(!isDblBetaT) {
         numParams = 2;
-        covar = gsl_matrix_alloc (numParams, numParams);//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        covar = gsl_matrix_alloc (numParams, numParams);
         xInit[0] = 0.0; xInit[1]=2.5;
         x = gsl_vector_view_array (xInit, numParams);
 
@@ -209,7 +162,7 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
     } else {
         numParams = 1;
         covar = gsl_matrix_alloc (numParams, numParams);
-        xInit[0] = (double)globals->siPmtWaveformRange().first;
+        xInit[0] = (double)waveform.size()*0.5;
         x = gsl_vector_view_array (xInit, numParams);
 
         f.f = &SiPmtFunction;
@@ -219,50 +172,6 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 
         s = gsl_multifit_fdfsolver_alloc (T, sizeFit, numParams);
     }
-    */
-
-    if(detType == "beta" && detSubtype == "double" && isTimingSignal) {
-              numParams = 1;
-        covar = gsl_matrix_alloc (numParams, numParams);
-        xInit[0] = (double)globals->siPmtWaveformRange().first;
-        x = gsl_vector_view_array (xInit, numParams);
-
-        f.f = &SiPmtTimingFunction;
-        f.df = &CalcSiPmtTimingJacobian;
-        f.fdf = &SiPmtTimingFunctionDerivative;
-        f.p = numParams;
-
-        s = gsl_multifit_fdfsolver_alloc (T, sizeFit, numParams);
-
-    } else if(detType == "beta" && detSubtype == "double" && isEnergySignal)  {
-       numParams = 2;
-        covar = gsl_matrix_alloc (numParams, numParams);//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        xInit[0] = 0.0; xInit[1]=2.5;
-        x = gsl_vector_view_array (xInit, numParams);
-
-        f.f = &SiPmtEnergyFunction;
-        f.df = &CalcSiPmtEnergyJacobian;
-        f.fdf = &SiPmtEnergyFunctionDerivative;
-        f.p = numParams;
-
-        s = gsl_multifit_fdfsolver_alloc (T, sizeFit, numParams);
-    } else{
-      numParams = 2;
-        covar = gsl_matrix_alloc (numParams, numParams);//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        xInit[0] = 0.0; xInit[1]=2.5;
-        x = gsl_vector_view_array (xInit, numParams);
-
-        f.f = &PmtFunction;
-        f.df = &CalcPmtJacobian;
-        f.fdf = &PmtFunctionDerivative;
-        f.p = numParams;
-
-        s = gsl_multifit_fdfsolver_alloc (T, sizeFit, numParams);
-    }
-
-
-
-
 
     gsl_multifit_fdfsolver_set (s, &f, &x.vector);
 
@@ -277,30 +186,19 @@ void FittingAnalyzer::Analyze(Trace &trace, const std::string &detType,
 
     gsl_multifit_covar (s->J, 0.0, covar);
 
-    /*    if(detType != "beta" && detSubtype != "double") {
-      phase = gsl_vector_get(s->x,0);
+    if(!isDblBetaT) {
+        phase = gsl_vector_get(s->x,0);
         fitAmp = gsl_vector_get(s->x,1);
     } else {
         phase = gsl_vector_get(s->x,0);
         fitAmp = 0.0;
     }
-    */
-
-    if(detType == "beta" && detSubtype == "double" && isTimingSignal) {//*******************************
-       phase = gsl_vector_get(s->x,0);
-        fitAmp = 0.0;
-    } else {
-       phase = gsl_vector_get(s->x,0);
-        fitAmp = gsl_vector_get(s->x,1);
-    }
-    
 
     trace.InsertValue("phase", phase+maxPos);
     trace.InsertValue("walk", CalculateWalk(maxVal, detType, detSubtype));
 
     trace.plot(DD_AMP, fitAmp, maxVal);
     trace.plot(D_PHASE, phase*1000+100);
-
     trace.plot(D_CHISQPERDOF,
                pow(gsl_blas_dnrm2(s->f),2.0)/(sizeFit - numParams));
 
@@ -393,7 +291,7 @@ int PmtFunctionDerivative (const gsl_vector * x, void *FitData, gsl_vector * f,
     return(GSL_SUCCESS);
 }
 
-int SiPmtTimingFunction (const gsl_vector * x, void *FitData, gsl_vector * f) {
+int SiPmtFunction (const gsl_vector * x, void *FitData, gsl_vector * f) {
     size_t n       = ((struct FittingAnalyzer::FitData *)FitData)->n;
     double *y      = ((struct FittingAnalyzer::FitData *)FitData)->y;
     double *sigma  = ((struct FittingAnalyzer::FitData *)FitData)->sigma;
@@ -411,7 +309,7 @@ int SiPmtTimingFunction (const gsl_vector * x, void *FitData, gsl_vector * f) {
     return(GSL_SUCCESS);
 }
 
-int CalcSiPmtTimingJacobian (const gsl_vector * x, void *FitData, gsl_matrix * J) {
+int CalcSiPmtJacobian (const gsl_vector * x, void *FitData, gsl_matrix * J) {
     size_t n       = ((struct FittingAnalyzer::FitData *)FitData)->n;
     double *sigma  = ((struct FittingAnalyzer::FitData *)FitData)->sigma;
     double gamma   = ((struct FittingAnalyzer::FitData *)FitData)->gamma;
@@ -433,73 +331,9 @@ int CalcSiPmtTimingJacobian (const gsl_vector * x, void *FitData, gsl_matrix * J
     return(GSL_SUCCESS);
 }
 
-int SiPmtTimingFunctionDerivative (const gsl_vector * x, void *FitData, gsl_vector * f,
+int SiPmtFunctionDerivative (const gsl_vector * x, void *FitData, gsl_vector * f,
                             gsl_matrix * J) {
-    SiPmtTimingFunction (x, FitData, f);
-    CalcSiPmtTimingJacobian (x, FitData, J);
-    return(GSL_SUCCESS);
-}
-
-int SiPmtEnergyFunction (const gsl_vector * x, void *FitData, gsl_vector * f) {
-    size_t n       = ((struct FittingAnalyzer::FitData *)FitData)->n;
-    double *y      = ((struct FittingAnalyzer::FitData *)FitData)->y;
-    double *sigma  = ((struct FittingAnalyzer::FitData *)FitData)->sigma;
-    double beta    = ((struct FittingAnalyzer::FitData *)FitData)->beta;
-    double gamma   = ((struct FittingAnalyzer::FitData *)FitData)->gamma;
-    double qdc     = ((struct FittingAnalyzer::FitData *)FitData)->qdc;
-
-    double phi     = gsl_vector_get (x, 0);
-    double alpha   = gsl_vector_get (x, 1);
-
-    for(size_t i = 0; i < n; i++) {
-        double t = i;
-        double diff = t-phi;
-        double Yi = 0;
-
-        if(t < phi)
-            Yi = 0;
-        else
-            Yi = qdc * alpha * exp(-beta*diff) * (1-exp(-pow(gamma*diff,4.)));
-
-        gsl_vector_set (f, i, (Yi - y[i])/sigma[i]);
-    }
-    return(GSL_SUCCESS);
-}
-
-int CalcSiPmtEnergyJacobian (const gsl_vector * x, void *FitData, gsl_matrix * J) {
-    size_t n = ((struct FittingAnalyzer::FitData *)FitData)->n;
-    double *sigma = ((struct FittingAnalyzer::FitData *) FitData)->sigma;
-    double beta    = ((struct FittingAnalyzer::FitData *)FitData)->beta;
-    double gamma   = ((struct FittingAnalyzer::FitData *)FitData)->gamma;
-    double qdc    = ((struct FittingAnalyzer::FitData *)FitData)->qdc;
-
-    double phi     = gsl_vector_get (x, 0);
-    double alpha   = gsl_vector_get (x, 1);
-
-    double dphi, dalpha;
-
-    for(size_t i = 0; i < n; i++) {
-        double t = i;
-        double diff = t-phi;
-        double gaussSq = exp(-pow(gamma*diff,4.));
-        double s = sigma[i];
-        if(t < phi) {
-            dphi   = 0;
-            dalpha = 0;
-        } else {
-            dphi = alpha*beta*qdc*exp(-beta*diff)*(1-gaussSq) -
-                    4*alpha*qdc*pow(diff,3.)*exp(-beta*diff)*pow(gamma,4.)*gaussSq;
-            dalpha = qdc * exp(-beta*diff) * (1-gaussSq);
-        }
-        gsl_matrix_set(J,i,0, dphi/s);
-        gsl_matrix_set(J,i,1, dalpha/s);
-    }
-    return(GSL_SUCCESS);
-}
-
-int SiPmtEnergyFunctionDerivative (const gsl_vector * x, void *FitData, gsl_vector * f,
-                            gsl_matrix * J) {
-    SiPmtEnergyFunction (x, FitData, f);
-    CalcSiPmtEnergyJacobian (x, FitData, J);
+    SiPmtFunction (x, FitData, f);
+    CalcSiPmtJacobian (x, FitData, J);
     return(GSL_SUCCESS);
 }

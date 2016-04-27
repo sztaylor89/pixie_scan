@@ -120,7 +120,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
             unsigned int barPlusStartLoc = numStarts_*barLoc+startLoc;
 	    
             double tofOffset = cal.GetTofOffset(startLoc);
-            double tof = bar.GetWalkCorTimeAve() -
+            double tof = bar.GetCorTimeAve() -
                 start.GetTimeAverage() + tofOffset;
             double corTof =
                 VandleProcessor::CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
