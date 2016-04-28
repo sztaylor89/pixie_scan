@@ -132,14 +132,14 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
         
 	
 	if(barNum == 7) {
-	  /*
-	  if(it->second.GetRightSide().GetTraceQdc() > 4000){
+	  
+	  if(it->second.GetLeftSide().GetTraceQdc() > 4000){
 	    for(unsigned int j = 0; j<it->second.GetRightSide().GetTrace()->size(); j++){
 	      cout << j << " " << it->second.GetRightSide().GetTrace()->at(j) << endl;
 	    }
 	  cout << endl << endl;
 	}
-	  */
+	  
 
 	     plot(DD_PP4, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
