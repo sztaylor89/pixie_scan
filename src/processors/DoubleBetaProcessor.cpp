@@ -84,6 +84,8 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
     double resolution = 2;
     double offset = 1500;
 
+    
+
     for(map<unsigned int, pair<double,double> >::iterator it = lrtbars.begin();
 	it != lrtbars.end(); it++) {
 	stringstream place;
@@ -97,11 +99,11 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
         plot(DD_QDC, (*it).second.GetLeftSide().GetTraceQdc(), barNum * 2);
         plot(DD_QDC, (*it).second.GetRightSide().GetTraceQdc(), barNum * 2 + 1);
         plot(DD_TDIFF, (*it).second.GetTimeDifference()*resolution + offset, barNum);
-        if(barNum == 4) {
-            plot(DD_PP1, (*it).second.GetLeftSide().GetPhase()*resolution,
+        if(barNum == 4) {	
+	  plot(DD_PP1, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF1, (*it).second.GetTimeDifference()*resolution+offset,
-             (*it).second.GetLeftSide().GetTraceQdc());
+             (*it).second.GetQdc());
 	    //	    if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
 	    //plot(DD_BETAWALK1,  (*it).second.GetTimeDifference()*resolution+offset,
 	    //	   (*it).second.GetRightSide().GetTraceQdc());
@@ -130,6 +132,15 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
         
 	
 	if(barNum == 7) {
+	  /*
+	  if(it->second.GetRightSide().GetTraceQdc() > 4000){
+	    for(unsigned int j = 0; j<it->second.GetRightSide().GetTrace()->size(); j++){
+	      cout << j << " " << it->second.GetRightSide().GetTrace()->at(j) << endl;
+	    }
+	  cout << endl << endl;
+	}
+	  */
+
 	     plot(DD_PP4, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
              plot(DD_QDCTDIFF4, (*it).second.GetTimeDifference()*resolution+offset,
