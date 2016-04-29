@@ -36,9 +36,6 @@ namespace dammIds {
       const int DD_SNQDC1R = 12;//!< Signal to noise ratio vs qdc bar 1 right
       const int DD_SNQDC2L = 13;//!< Signal to noise ratio vs qdc bar 2 left
       const int DD_SNQDC2R = 14;//!< Signal to noise ratio vs qdc bar 2 right
- 
-
-
     }
 }
 
@@ -48,8 +45,20 @@ using namespace dammIds::doublebeta;
 DoubleBetaProcessor::DoubleBetaProcessor():
     EventProcessor(OFFSET, RANGE, "DoubleBetaProcessor") {
     associatedTypes.insert("beta");
-}
-
+    /*
+      #ifdef useroot
+      tfile_ = new TFile("test.root","RECREATE");
+      thist_ = new TH3D("interesting","",200,-100,100,2000,0,2000,120,0,60);
+      #endif
+      }
+      
+      DoubleBetaProcessor::~DoubleBetaProcessor() {
+      #ifdef useroot
+      tfile_->Write();
+      tfile_->Close();
+      #endif
+      }
+    */
 void DoubleBetaProcessor::DeclarePlots(void) {
     DeclareHistogram2D(DD_SINGLESQDC, SD, S4, "Location vs. Singles QDC");
     DeclareHistogram2D(DD_QDC, SD, S4, "Location vs. Coincident QDC");
@@ -110,8 +119,8 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
         plot(DD_QDC, (*it).second.GetRightSide().GetTraceQdc(), barNum * 2 + 1);
         plot(DD_TDIFF, (*it).second.GetTimeDifference()*resolution + offset, barNum);
 
-        if(barNum == 4) {	
-	  
+        if(barNum == 0) {
+	 
 	  /*	  if(it->second.GetLeftSide().GetTraceQdc() > 4000){
 	    for(unsigned int j = 0; j<it->second.GetRightSide().GetTrace()->size(); j++){
 	      cout << j << " " << it->second.GetRightSide().GetTrace()->at(j) << endl;
@@ -134,7 +143,13 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	    }
         
 	
-	if(barNum == 5) {
+	if(barNum == 1) {
+	 
+	  //thist_->Fill((*it).second.GetTimeDifference(),
+	  // 	       (*it).second.GetRightSide().GetTraceQdc(),
+	  //	       (*it).second.GetRightSide().GetSignalToNoiseRatio());
+
+
 	  plot(DD_SNQDC2L, (*it).second.GetLeftSide().GetTraceQdc(),
 	       (*it).second.GetLeftSide().GetSignalToNoiseRatio());
 	  plot(DD_SNQDC2R, (*it).second.GetRightSide().GetTraceQdc(),
