@@ -31,7 +31,7 @@ namespace dammIds {
        const int DD_BETAWALK4 = 14;//!< Walk Correction, QDC single side vs TDIFF (Bar 4)
       */
         const int DD_PP5 = 15;//!< ID to plost the phase-phase for your favorite bar (1)
-        const int DD_QDCTDIFF5 = 16;//!< QDC vs. TDiff for your favorite bar (1), energy signals
+        const int DD_QDCTDIFF5 = 11;//!< QDC vs. TDiff for your favorite bar (1), energy signals
        }
 }
 
@@ -53,10 +53,10 @@ void DoubleBetaProcessor::DeclarePlots(void) {
     DeclareHistogram2D(DD_QDCTDIFF2, SC, SC,"(Bar 5)TDiff vs. Coincident QDC");
     DeclareHistogram2D(DD_PP3, SC, SC,"Phase vs. Phase - Bar 6 Only");
     DeclareHistogram2D(DD_QDCTDIFF3, SC, SC,"(Bar 6)TDiff vs. Coincident QDC");
-    DeclareHistogram2D(DD_PP4, SC, SC,"Phase vs. Phase - Bar 7 Only");
-    DeclareHistogram2D(DD_QDCTDIFF4, SC, SC,"(Bar 7)TDiff vs. Coincident QDC");
-    DeclareHistogram2D(DD_PP5, SC, SC,"Phase vs. Phase - Bar 1 Only");
-    DeclareHistogram2D(DD_QDCTDIFF5, SC, SC,"(Bar 1)TDiff vs. Coincident QDC");
+    DeclareHistogram2D(DD_PP4, SC, SC,"Phase vs. Phase - Bar 7L Only");
+    DeclareHistogram2D(DD_QDCTDIFF4, SC, SC,"(Bar 7L)TDiff vs. Coincident QDC");
+    DeclareHistogram2D(DD_PP5, SC, SC,"Phase vs. Phase - Bar 7R Only");
+    DeclareHistogram2D(DD_QDCTDIFF5, SC, SC,"(Bar 7R)TDiff vs. Coincident QDC");
     
 
     /*
@@ -98,7 +98,18 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
         plot(DD_QDC, (*it).second.GetLeftSide().GetTraceQdc(), barNum * 2);
         plot(DD_QDC, (*it).second.GetRightSide().GetTraceQdc(), barNum * 2 + 1);
         plot(DD_TDIFF, (*it).second.GetTimeDifference()*resolution + offset, barNum);
+
         if(barNum == 4) {	
+	  
+	  /*	  if(it->second.GetLeftSide().GetTraceQdc() > 4000){
+	    for(unsigned int j = 0; j<it->second.GetRightSide().GetTrace()->size(); j++){
+	      cout << j << " " << it->second.GetRightSide().GetTrace()->at(j) << endl;
+	    }
+	  cout << endl << endl;
+	}
+	  */
+
+
 	  plot(DD_PP1, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF1, (*it).second.GetTimeDifference()*resolution+offset,
@@ -120,7 +131,7 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	    }
         
 	if(barNum == 6) {
-            plot(DD_PP3, (*it).second.GetLeftSide().GetPhase()*resolution,
+	  plot(DD_PP3, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF3, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
@@ -131,31 +142,26 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
         
 	
 	if(barNum == 7) {
-	  
-	  if(it->second.GetLeftSide().GetTraceQdc() > 4000){
-	    for(unsigned int j = 0; j<it->second.GetRightSide().GetTrace()->size(); j++){
-	      cout << j << " " << it->second.GetRightSide().GetTrace()->at(j) << endl;
-	    }
-	  cout << endl << endl;
-	}
-	  
-
 	     plot(DD_PP4, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
              plot(DD_QDCTDIFF4, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
+	     plot(DD_QDCTDIFF5, (*it).second.GetTimeDifference()*resolution+offset,
+             (*it).second.GetRightSide().GetTraceQdc());
+
 	     //if((*it).second.GetLeftSide().GetTraceQdc() > 3000.0){
 	     //plot(DD_BETAWALK4,  (*it).second.GetTimeDifference()*resolution+offset,
 	     //	   (*it).second.GetRightSide().GetTraceQdc());
 	    }
         
 
-        if(barNum == 1) {
+	/* if(barNum == 1) {
             plot(DD_PP5, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF5, (*it).second.GetTimeDifference()*resolution+offset,
              (*it).second.GetLeftSide().GetTraceQdc());
 	}
+	*/
     }
     return(true);
 }
