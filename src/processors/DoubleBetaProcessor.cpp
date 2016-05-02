@@ -45,21 +45,23 @@ using namespace dammIds::doublebeta;
 DoubleBetaProcessor::DoubleBetaProcessor():
     EventProcessor(OFFSET, RANGE, "DoubleBetaProcessor") {
     associatedTypes.insert("beta");
-    /*
+}
+/*    
       #ifdef useroot
       tfile_ = new TFile("test.root","RECREATE");
       thist_ = new TH3D("interesting","",200,-100,100,2000,0,2000,120,0,60);
       #endif
       }
-      
+    
       DoubleBetaProcessor::~DoubleBetaProcessor() {
-      #ifdef useroot
+	        
+#ifdef useroot
       tfile_->Write();
       tfile_->Close();
       #endif
       }
-    */
-}
+    
+*/
 void DoubleBetaProcessor::DeclarePlots(void) {
     DeclareHistogram2D(DD_SINGLESQDC, SD, S4, "Location vs. Singles QDC");
     DeclareHistogram2D(DD_QDC, SD, S4, "Location vs. Coincident QDC");
@@ -204,5 +206,6 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 bool DoubleBetaProcessor::Process(RawEvent &event) {
     if (!EventProcessor::Process(event))
         return(false);
+    EndProcess();
     return(true);
 }
