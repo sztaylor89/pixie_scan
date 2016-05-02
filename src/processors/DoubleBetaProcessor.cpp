@@ -59,6 +59,7 @@ DoubleBetaProcessor::DoubleBetaProcessor():
       #endif
       }
     */
+}
 void DoubleBetaProcessor::DeclarePlots(void) {
     DeclareHistogram2D(DD_SINGLESQDC, SD, S4, "Location vs. Singles QDC");
     DeclareHistogram2D(DD_QDC, SD, S4, "Location vs. Coincident QDC");
