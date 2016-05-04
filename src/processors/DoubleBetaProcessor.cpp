@@ -25,7 +25,7 @@ namespace dammIds {
         const int DD_QDCTDIFF3 = 8;//!< QDC vs. TDiff for your favorite bar (6), timing signals
         const int DD_PP4 = 9;//!< ID to plost the phase-phase for your favorite bar (7)
         const int DD_QDCTDIFF4 = 10;//!< QDC vs. TDiff for your favorite bar (7), energy signals
-	/* 
+	 
 	const int DD_SNQDC1L = 11;//!< Signal to noise ratio vs qdc bar 1 left
 	const int DD_SNQDC1R = 12;//!< Signal to noise ratio vs qdc bar 1 right
 	const int DD_SNQDC2L = 13;//!< Signal to noise ratio vs qdc bar 2 left
@@ -34,12 +34,12 @@ namespace dammIds {
 	const int DD_SNQDC3R = 16;//!< Signal to noise ratio vs qdc bar 3 right
 	const int DD_SNQDC4L = 17;//!< Signal to noise ratio vs qdc bar 4 left
 	const int DD_SNQDC4R = 18;//!< Signal to noise ratio vs qdc bar 4 right
-	*/
+	
 
-	const int DD_SNvsSumQDC1 = 11;//!< Signal to noise ratio vs qdc bar 1 summed
-	const int DD_SNvsSumQDC2 = 12;//!< Signal to noise ratio vs qdc bar 2 summed
-	const int DD_SNvsSumQDC3 = 13;//!< Signal to noise ratio vs qdc bar 3 summed
-	const int DD_SNvsSumQDC4 = 14;//!< Signal to noise ratio vs qdc bar 4 summed
+	const int DD_SNvsSumQDC1 = 19;//!< Signal to noise ratio vs qdc bar 1 summed
+	const int DD_SNvsSumQDC2 = 20;//!< Signal to noise ratio vs qdc bar 2 summed
+	const int DD_SNvsSumQDC3 = 21;//!< Signal to noise ratio vs qdc bar 3 summed
+	const int DD_SNvsSumQDC4 = 22;//!< Signal to noise ratio vs qdc bar 4 summed
 	
 
 
@@ -93,7 +93,7 @@ void DoubleBetaProcessor::DeclarePlots(void) {
     DeclareHistogram2D(DD_QDCTDIFF3, SC, SC,"(Bar 6)TDiff vs. Coincident QDC");
     DeclareHistogram2D(DD_PP4, SC, SC,"Phase vs. Phase - Bar 7L Only");
     DeclareHistogram2D(DD_QDCTDIFF4, SC, SC,"(Bar 7L)TDiff vs. Coincident QDC");
-    /*
+    
     DeclareHistogram2D(DD_SNQDC1L, SC, S6,"(Bar 1L)SN ratio vs QDC)");
     DeclareHistogram2D(DD_SNQDC1R, SC, S6,"(Bar 1R)SN ratio vs QDC)");
     DeclareHistogram2D(DD_SNQDC2L, SC, S6,"(Bar 2L)SN ratio vs QDC)");
@@ -102,13 +102,13 @@ void DoubleBetaProcessor::DeclarePlots(void) {
     DeclareHistogram2D(DD_SNQDC3R, SC, S6,"(Bar 3R)SN ratio vs QDC)");
     DeclareHistogram2D(DD_SNQDC4L, SC, S6,"(Bar 4L)SN ratio vs QDC)");
     DeclareHistogram2D(DD_SNQDC4R, SC, S6,"(Bar 4R)SN ratio vs QDC)");
-    */
- 
+    
+    
     DeclareHistogram2D(DD_SNvsSumQDC1, SC, S6,"Bar 1 SNR vs QDC Sum");
     DeclareHistogram2D(DD_SNvsSumQDC2, SC, S6,"Bar 2 SNR vs QDC Sum");
     DeclareHistogram2D(DD_SNvsSumQDC3, SC, S6,"Bar 3 SNR vs QDC Sum");
     DeclareHistogram2D(DD_SNvsSumQDC4, SC, S6,"Bar 4 SNR vs QDC Sum");
-
+    
 
     /*
     DeclareHistogram2D(DD_BETAWALK1, SC, SE,"Beta Walk Correction, QDC(bar 1) vs. TDIFF");
@@ -157,7 +157,7 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
         plot(DD_QDC, (*it).second.GetRightSide().GetTraceQdc(), barNum * 2 + 1);
         plot(DD_TDIFF, (*it).second.GetTimeDifference()*resolution + offset, barNum);
 
-        if(barNum == 0) {
+        if(barNum == 4) {
 
 	    plot(DD_SNvsSumQDC1, ((*it).second.GetLeftSide().GetTraceQdc()+(*it).second.GetRightSide().GetTraceQdc())/2, 
 		 ((*it).second.GetLeftSide().GetSignalToNoiseRatio()+(*it).second.GetRightSide().GetSignalToNoiseRatio())/2);
@@ -172,12 +172,12 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	  cout << endl << endl;
 	}
 	  */
-	    /*
+	    
 	  plot(DD_SNQDC1L, (*it).second.GetLeftSide().GetTraceQdc(),
 	       (*it).second.GetLeftSide().GetSignalToNoiseRatio());
 	  plot(DD_SNQDC1R, (*it).second.GetRightSide().GetTraceQdc(),
-	       (*it).second.GetLeftSide().GetSignalToNoiseRatio());
-	    */
+	       (*it).second.GetRightSide().GetSignalToNoiseRatio());
+	    
 	  plot(DD_PP1, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF1, (*it).second.GetTimeDifference()*resolution+offset,
@@ -188,7 +188,7 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	    }
         
 	
-	if(barNum == 1) {
+	if(barNum == 5) {
 	 
 	    plot(DD_SNvsSumQDC2, ((*it).second.GetLeftSide().GetTraceQdc()+(*it).second.GetRightSide().GetTraceQdc())/2, 
 		 ((*it).second.GetLeftSide().GetSignalToNoiseRatio()+(*it).second.GetRightSide().GetSignalToNoiseRatio())/2);
@@ -199,12 +199,12 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	  // 	       (*it).second.GetRightSide().GetTraceQdc(),
 	  //	       (*it).second.GetRightSide().GetSignalToNoiseRatio());
 
-	    /*
+	    
 	  plot(DD_SNQDC2L, (*it).second.GetLeftSide().GetTraceQdc(),
 	       (*it).second.GetLeftSide().GetSignalToNoiseRatio());
 	  plot(DD_SNQDC2R, (*it).second.GetRightSide().GetTraceQdc(),
-	       (*it).second.GetLeftSide().GetSignalToNoiseRatio());
-	    */
+	       (*it).second.GetRightSide().GetSignalToNoiseRatio());
+	    
 	     plot(DD_PP2, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
              plot(DD_QDCTDIFF2, (*it).second.GetTimeDifference()*resolution+offset,
@@ -214,19 +214,19 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	     //	   (*it).second.GetRightSide().GetTraceQdc());
 	    }
         
-	if(barNum == 2) {
+	if(barNum == 6) {
 	    
 	    plot(DD_SNvsSumQDC3, ((*it).second.GetLeftSide().GetTraceQdc()+(*it).second.GetRightSide().GetTraceQdc())/2, 
 		 ((*it).second.GetLeftSide().GetSignalToNoiseRatio()+(*it).second.GetRightSide().GetSignalToNoiseRatio())/2);
 
 	    //	    plot (DD_QDCLR3,(*it).second.GetLeftSide().GetTraceQdc() , (*it).second.GetRightSide().GetTraceQdc());
 
-	    /*
+	    
 	    plot(DD_SNQDC3L, (*it).second.GetLeftSide().GetTraceQdc(),
 		 (*it).second.GetLeftSide().GetSignalToNoiseRatio());
 	    plot(DD_SNQDC3R, (*it).second.GetRightSide().GetTraceQdc(),
-		 (*it).second.GetLeftSide().GetSignalToNoiseRatio());
-	    */
+		 (*it).second.GetRightSide().GetSignalToNoiseRatio());
+	    
 	  plot(DD_PP3, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
             plot(DD_QDCTDIFF3, (*it).second.GetTimeDifference()*resolution+offset,
@@ -237,7 +237,7 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	    }
         
 	
-	if(barNum == 3) {
+	if(barNum == 7) {
 	    
 	    plot(DD_SNvsSumQDC4, ((*it).second.GetLeftSide().GetTraceQdc()+(*it).second.GetRightSide().GetTraceQdc())/2, 
 		 ((*it).second.GetLeftSide().GetSignalToNoiseRatio()+(*it).second.GetRightSide().GetSignalToNoiseRatio())/2);	    
@@ -245,12 +245,12 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 
 //	    plot (DD_QDCLR4,(*it).second.GetLeftSide().GetTraceQdc() , (*it).second.GetRightSide().GetTraceQdc());
 
-	    /*
+	    
 	    plot(DD_SNQDC4L, (*it).second.GetLeftSide().GetTraceQdc(),
 	       (*it).second.GetLeftSide().GetSignalToNoiseRatio());
 	    plot(DD_SNQDC4R, (*it).second.GetRightSide().GetTraceQdc(),
-	       (*it).second.GetLeftSide().GetSignalToNoiseRatio());
-	    */
+	       (*it).second.GetRightSide().GetSignalToNoiseRatio());
+	    
 	     plot(DD_PP4, (*it).second.GetLeftSide().GetPhase()*resolution,
                         (*it).second.GetRightSide().GetPhase()*resolution);
              plot(DD_QDCTDIFF4, (*it).second.GetTimeDifference()*resolution+offset,

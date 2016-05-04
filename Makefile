@@ -1,6 +1,6 @@
 #!/bin/make
 # GNUmakefile using implicit rules and standard definitions
-SHELL=/bin/sh
+SHELL=/bin/bash
 
 # Uncomment the following line for root functionality
 USEROOT = 1
@@ -117,14 +117,13 @@ endif
 ifdef USEROOT
 CXX_OBJS  += $(ROOTPROCESSORO)
 PIXIE = pixie_ldf_c$(ExeSuf)
-ROOTCONFIG   := root-config
+ROOTCONFIG := $(ROOT_PATH)/bin/root-config
 
 #no uncomment ROOTCLFAGS   := $(filter-out pthread,$(ROOTCFLAGS))
 CXXFLAGS     += $(shell $(ROOTCONFIG) --cflags) -Duseroot
 LDFLAGS      += $(shell $(ROOTCONFIG) --ldflags)
 LDLIBS       += $(shell $(ROOTCONFIG) --libs)
 endif
-
 
 #------------ Compile with Gamma-Gamma gates support in GeProcessor
 ifdef GGATES

@@ -41,6 +41,9 @@ namespace dammIds {
         const int DD_GAMMAENERGYVSTOF  = 10;//!< Gamma Energy vs. ToF
         const int DD_TQDCAVEVSTOF_VETO = 11;//!< QDC vs. ToF - Vetoed
         const int DD_TOFBARS_VETO      = 12;//!< ToF - Vetoed
+	
+	const int DD_SNQDC1L = 13;//!< Signal to noise ratio vs qdc bar 1 left
+	const int DD_SNQDC1R = 14;//!< Signal to noise ratio vs qdc bar 1 right
 
         const int D_DEBUGGING    = 0+DEBUGGING_OFFSET;//!< Debugging countable problems
         const int DD_DEBUGGING   = 1+DEBUGGING_OFFSET;//!< 2D Hist to count problems
@@ -106,6 +109,11 @@ void VandleProcessor::DeclarePlots(void) {
 //        "<E> VANDLE vs. CorTOF VANDLE - Gamma Veto");
 //        DeclareHistogram2D(DD_TOFBARS_VETO, SC, S9,
 //        "Bar vs CorTOF - Gamma Veto");
+
+	DeclareHistogram2D(DD_SNQDC1L, SC, S6,"(Bar 1L)SN ratio vs QDC)");
+	DeclareHistogram2D(DD_SNQDC1R, SC, S6,"(Bar 1R)SN ratio vs QDC)");
+
+
     }
     if(hasBig_) {
         DeclareHistogram2D(DD_TQDCBARS+BIG_OFFSET, SD, S6,
@@ -162,6 +170,11 @@ void VandleProcessor::DeclarePlots(void) {
 //        "<E> VANDLE vs. CorTOF VANDLE - Gamma Veto");
 //        DeclareHistogram2D(DD_TOFBARS_VETO+MED_OFFSET, SC, S9,
 //        "Bar vs CorTOF - Gamma Veto");
+    
+	DeclareHistogram2D(DD_SNQDC1L+MED_OFFSET, SC, S6,"(Bar 1L)SN ratio vs QDC)");
+	DeclareHistogram2D(DD_SNQDC1R+MED_OFFSET, SC, S6,"(Bar 1R)SN ratio vs QDC)");
+
+
     }
 
     DeclareHistogram1D(D_DEBUGGING, S5, "1D Debugging");
@@ -327,6 +340,8 @@ void VandleProcessor::AnalyzeStarts(void) {
             plot(DD_TQDCAVEVSCORTOF+histTypeOffset, corTof*plotMult_+plotOffset_,
                  bar.GetQdc());
 
+	   
+
             if (geSummary_) {
                 if (geSummary_->GetMult() > 0) {
                     const vector<ChanEvent *> &geList = geSummary_->GetList();
@@ -365,6 +380,17 @@ void VandleProcessor::FillVandleOnlyHists(void) {
              bar.GetRightSide().GetMaximumValue(), barId.first*2+1);
         plot(DD_TIMEDIFFBARS+OFFSET,
             bar.GetTimeDifference()*plotMult_+plotOffset_, barId.first);
+
+	 //SZT
+	    if(barId.first*2 == 0){
+		plot(DD_SNQDC1L, bar.GetLeftSide().GetTraceQdc(),
+		     bar.GetLeftSide().GetSignalToNoiseRatio());
+		
+	    }
+	    if(barId.first*2+1 ==1){
+	    plot(DD_SNQDC1R, bar.GetRightSide().GetTraceQdc(),
+		     bar.GetRightSide().GetSignalToNoiseRatio());
+	    }
     }
 }
 
