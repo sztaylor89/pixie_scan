@@ -382,13 +382,11 @@ void VandleProcessor::FillVandleOnlyHists(void) {
             bar.GetTimeDifference()*plotMult_+plotOffset_, barId.first);
 
 	 //SZT
-	    if(barId.first*2 == 0){
+	unsigned int barNum = (*it).first.first;
+	    if(barNum == 0){
 		plot(DD_SNQDC1L, bar.GetLeftSide().GetTraceQdc(),
 		     bar.GetLeftSide().GetSignalToNoiseRatio());
-		
-	    }
-	    if(barId.first*2+1 ==1){
-	    plot(DD_SNQDC1R, bar.GetRightSide().GetTraceQdc(),
+		plot(DD_SNQDC1R, bar.GetRightSide().GetTraceQdc(),
 		     bar.GetRightSide().GetSignalToNoiseRatio());
 	    }
     }
