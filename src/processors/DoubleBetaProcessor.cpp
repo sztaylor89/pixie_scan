@@ -172,8 +172,8 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	  cout << endl << endl;
 	}
 	  */
-	    
-	  plot(DD_SNQDC1L, (*it).second.GetLeftSide().GetTraceQdc(),
+	    	
+  plot(DD_SNQDC1L, (*it).second.GetLeftSide().GetTraceQdc(),
 	       (*it).second.GetLeftSide().GetSignalToNoiseRatio());
 	  plot(DD_SNQDC1R, (*it).second.GetRightSide().GetTraceQdc(),
 	       (*it).second.GetRightSide().GetSignalToNoiseRatio());

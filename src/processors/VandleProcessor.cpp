@@ -53,7 +53,7 @@ namespace dammIds {
 using namespace std;
 using namespace dammIds::vandle;
 
-VandleProcessor::VandleProcessor(): 
+VandleProcessor::VandleProcessor():
     EventProcessor(OFFSET, RANGE, "VandleProcessor") {
     associatedTypes.insert("vandle");
 }
@@ -185,7 +185,7 @@ bool VandleProcessor::PreProcess(RawEvent &event) {
     if (!EventProcessor::PreProcess(event))
         return false;
     ClearMaps();
-    
+
     static const vector<ChanEvent*> &events =
         event.GetSummary("vandle")->GetList();
 
@@ -277,7 +277,7 @@ void VandleProcessor::AnalyzeBarStarts(void) {
 
             double corTof =
                 CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
-	    
+
             plot(DD_TOFBARS+histTypeOffset, tof*plotMult_+plotOffset_,
                  barPlusStartLoc);
             plot(DD_CORTOFBARS, corTof*plotMult_+plotOffset_, barPlusStartLoc);
@@ -302,6 +302,20 @@ void VandleProcessor::AnalyzeBarStarts(void) {
                     plot(DD_TOFBARS_VETO+histTypeOffset, tof, barPlusStartLoc);
                 }
             }
+
+//SZT
+	unsigned int barNum = (*it).first.first;
+	if(barNum == 0){
+
+	    //cout << bar.GetLeftSide().GetTraceQdc() << " " <<
+	    //	bar.GetLeftSide().GetSignalToNoiseRatio() << endl;
+
+	    plot(DD_SNQDC1L + histTypeOffset, bar.GetLeftSide().GetTraceQdc(),
+		 bar.GetLeftSide().GetSignalToNoiseRatio());
+	    plot(DD_SNQDC1R + histTypeOffset, bar.GetRightSide().GetTraceQdc(),
+		 bar.GetRightSide().GetSignalToNoiseRatio());
+	}
+ 
         } // for(TimingMap::iterator itStart
     } //(BarMap::iterator itBar
 } //void VandleProcessor::AnalyzeData
@@ -320,7 +334,7 @@ void VandleProcessor::AnalyzeStarts(void) {
 
         for(TimingMap::iterator itStart = starts_.begin();
         itStart != starts_.end(); itStart++) {
-            if(!(*itStart).second.GetIsValidData())
+            if(!(*itStart).second.GetIsValid())
                 continue;
 
             unsigned int startLoc = (*itStart).first.first;
@@ -329,7 +343,7 @@ void VandleProcessor::AnalyzeStarts(void) {
 
             double tof = bar.GetCorTimeAve() -
                 start.GetCorrectedTime() + cal.GetTofOffset(startLoc);
-	    
+
             double corTof =
                 CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
 
@@ -380,16 +394,8 @@ void VandleProcessor::FillVandleOnlyHists(void) {
              bar.GetRightSide().GetMaximumValue(), barId.first*2+1);
         plot(DD_TIMEDIFFBARS+OFFSET,
             bar.GetTimeDifference()*plotMult_+plotOffset_, barId.first);
-
-	 //SZT
-	unsigned int barNum = (*it).first.first;
-	    if(barNum == 0){
-		plot(DD_SNQDC1L, bar.GetLeftSide().GetTraceQdc(),
-		     bar.GetLeftSide().GetSignalToNoiseRatio());
-		plot(DD_SNQDC1R, bar.GetRightSide().GetTraceQdc(),
-		     bar.GetRightSide().GetSignalToNoiseRatio());
-	    }
     }
+
 }
 
 unsigned int VandleProcessor::ReturnOffset(const std::string &type) {
