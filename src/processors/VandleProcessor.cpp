@@ -59,11 +59,17 @@ namespace dammIds {
 	const int DD_QDCLR24 = 16;//!<Right vs Left QDC(Bar 24)
 	*/
 
+	/*
 	const int DD_SNvsSumQDC0 = 13;//!< Signal to noise ratio vs qdc bar 0 summed
 	const int DD_SNvsSumQDC1 = 14;//!< Signal to noise ratio vs qdc bar 1 summed
 	const int DD_SNvsSumQDC14 = 15;//!< Signal to noise ratio vs qdc bar 14 summed
 	const int DD_SNvsSumQDC24 = 16;//!< Signal to noise ratio vs qdc bar 24 summed
+	*/
 
+	const int DD_POSITIONvsQDC0 = 13;//!< Bar position vs QDC for particular side bar 0
+	const int DD_POSITIONvsQDC1 = 14;//!< Bar position vs QDC for particular side bar 1
+	const int DD_POSITIONvsQDC14 = 15;//!< Bar position vs QDC for particular side bar 14
+	const int DD_POSITIONvsQDC24 = 16;//!< Bar position vs QDC for particular side bar 24
 
 
         const int D_DEBUGGING    = 0+DEBUGGING_OFFSET;//!< Debugging countable problems
@@ -206,11 +212,20 @@ void VandleProcessor::DeclarePlots(void) {
 	DeclareHistogram2D(DD_QDCLR14+MED_OFFSET, SC, SC,"Bar 14 R vs. L QDC");
 	DeclareHistogram2D(DD_QDCLR24+MED_OFFSET, SC, SC,"Bar 24 R vs. L QDC");
 	*/
-	
-	DeclareHistogram2D(DD_SNvsSumQDC0+MED_OFFSET, SC, S6,"Bar 0 SNR vs QDC Sum");
-	DeclareHistogram2D(DD_SNvsSumQDC1+MED_OFFSET, SC, S6,"Bar 1 SNR vs QDC Sum");
-	DeclareHistogram2D(DD_SNvsSumQDC14+MED_OFFSET, SC, S6,"Bar 14 SNR vs QDC Sum");
-	DeclareHistogram2D(DD_SNvsSumQDC24+MED_OFFSET, SC, S6,"Bar 24 SNR vs QDC Sum");
+	/*
+	  DeclareHistogram2D(DD_SNvsSumQDC0+MED_OFFSET, SC, S6,"Bar 0 SNR vs QDC Sum");
+	  DeclareHistogram2D(DD_SNvsSumQDC1+MED_OFFSET, SC, S6,"Bar 1 SNR vs QDC Sum");
+	  DeclareHistogram2D(DD_SNvsSumQDC14+MED_OFFSET, SC, S6,"Bar 14 SNR vs QDC Sum");
+	  DeclareHistogram2D(DD_SNvsSumQDC24+MED_OFFSET, SC, S6,"Bar 24 SNR vs QDC Sum");
+	*/
+
+
+	DeclareHistogram2D(DD_POSITIONvsQDC0+MED_OFFSET, SC, S7,"Bar 0 Position vs QDC");
+	DeclareHistogram2D(DD_POSITIONvsQDC1+MED_OFFSET, SC, S7,"Bar 1 Position vs QDC");
+	DeclareHistogram2D(DD_POSITIONvsQDC14+MED_OFFSET, SC, S7,"Bar 14 Position vs QDC");
+	DeclareHistogram2D(DD_POSITIONvsQDC24+MED_OFFSET, SC, S7,"Bar 24 Position vs QDC");
+
+
 
     }
 
@@ -343,12 +358,19 @@ void VandleProcessor::AnalyzeBarStarts(void) {
 //SZT
 	unsigned int barNum = (*it).first.first;
 	if(barNum == 0){
+	    
+	    plot (DD_POSITIONvsQDC0 + histTypeOffset, bar.GetRightSide().GetTraceQdc() , (bar.GetQdcPosition()+1)*60);
+	    // cout << (bar.GetQdcPosition()+1)*60 << endl;
 	    //plot (DD_QDCLR0 + histTypeOffset,bar.GetLeftSide().GetTraceQdc() , bar.GetRightSide().GetTraceQdc());
-	     plot(DD_SNvsSumQDC0 + histTypeOffset, (bar.GetLeftSide().GetTraceQdc()+bar.GetRightSide().GetTraceQdc())/2, (bar.GetLeftSide().GetSignalToNoiseRatio()+bar.GetRightSide().GetSignalToNoiseRatio())/2);
+	    //plot(DD_SNvsSumQDC0 + histTypeOffset, (bar.GetLeftSide().GetTraceQdc()+bar.GetRightSide().GetTraceQdc())/2,
+	    //	  (bar.GetLeftSide().GetSignalToNoiseRatio()+bar.GetRightSide().GetSignalToNoiseRatio())/2);
 	}
 	if(barNum == 1){
+	    plot (DD_POSITIONvsQDC1 + histTypeOffset, bar.GetRightSide().GetTraceQdc() , (bar.GetQdcPosition()+1)*60);
+
 	    //plot (DD_QDCLR1 + histTypeOffset,bar.GetLeftSide().GetTraceQdc() , bar.GetRightSide().GetTraceQdc());
-	     plot(DD_SNvsSumQDC1 + histTypeOffset, (bar.GetLeftSide().GetTraceQdc()+bar.GetRightSide().GetTraceQdc())/2, (bar.GetLeftSide().GetSignalToNoiseRatio()+bar.GetRightSide().GetSignalToNoiseRatio())/2);
+	    //plot(DD_SNvsSumQDC1 + histTypeOffset, (bar.GetLeftSide().GetTraceQdc()+bar.GetRightSide().GetTraceQdc())/2,
+	    //	  (bar.GetLeftSide().GetSignalToNoiseRatio()+bar.GetRightSide().GetSignalToNoiseRatio())/2);
 	    /* plot(DD_SNQDC1L + histTypeOffset, bar.GetLeftSide().GetTraceQdc(),
 		 bar.GetLeftSide().GetSignalToNoiseRatio());
 	    plot(DD_SNQDC1R + histTypeOffset, bar.GetRightSide().GetTraceQdc(),
@@ -358,8 +380,10 @@ void VandleProcessor::AnalyzeBarStarts(void) {
 
 	}
 	if(barNum == 14){
+	    plot (DD_POSITIONvsQDC14 + histTypeOffset, bar.GetLeftSide().GetTraceQdc() , (bar.GetQdcPosition()+1)*60);
 	    //plot (DD_QDCLR14 + histTypeOffset,bar.GetLeftSide().GetTraceQdc() , bar.GetRightSide().GetTraceQdc());
-	     plot(DD_SNvsSumQDC14 + histTypeOffset, (bar.GetLeftSide().GetTraceQdc()+bar.GetRightSide().GetTraceQdc())/2, (bar.GetLeftSide().GetSignalToNoiseRatio()+bar.GetRightSide().GetSignalToNoiseRatio())/2);
+	    //plot(DD_SNvsSumQDC14 + histTypeOffset, (bar.GetLeftSide().GetTraceQdc()+bar.GetRightSide().GetTraceQdc())/2,
+	    //	  (bar.GetLeftSide().GetSignalToNoiseRatio()+bar.GetRightSide().GetSignalToNoiseRatio())/2);
 	    /*plot(DD_SNQDC14L + histTypeOffset, bar.GetLeftSide().GetTraceQdc(),
 		 bar.GetLeftSide().GetSignalToNoiseRatio());
 	    plot(DD_SNQDC14R + histTypeOffset, bar.GetRightSide().GetTraceQdc(),
@@ -369,8 +393,10 @@ void VandleProcessor::AnalyzeBarStarts(void) {
 
 	}
 	if(barNum == 24){
+	    plot (DD_POSITIONvsQDC24 + histTypeOffset, bar.GetRightSide().GetTraceQdc() , (bar.GetQdcPosition()+1)*60);
 	    // plot (DD_QDCLR24 + histTypeOffset,bar.GetLeftSide().GetTraceQdc() , bar.GetRightSide().GetTraceQdc());
-	     plot(DD_SNvsSumQDC24 + histTypeOffset, (bar.GetLeftSide().GetTraceQdc()+bar.GetRightSide().GetTraceQdc())/2, (bar.GetLeftSide().GetSignalToNoiseRatio()+bar.GetRightSide().GetSignalToNoiseRatio())/2);
+	    //plot(DD_SNvsSumQDC24 + histTypeOffset, (bar.GetLeftSide().GetTraceQdc()+bar.GetRightSide().GetTraceQdc())/2,
+	    //	  (bar.GetLeftSide().GetSignalToNoiseRatio()+bar.GetRightSide().GetSignalToNoiseRatio())/2);
 	    /*    plot(DD_SNQDC24L + histTypeOffset, bar.GetLeftSide().GetTraceQdc(),
 		 bar.GetLeftSide().GetSignalToNoiseRatio());
 	    plot(DD_SNQDC24R + histTypeOffset, bar.GetRightSide().GetTraceQdc(),
