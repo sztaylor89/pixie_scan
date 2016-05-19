@@ -232,7 +232,7 @@ void DetectorDriver::LoadProcessors(Messenger& m) {
             vecProcess.push_back(new PulserProcessor());
         } else if (name == "SsdProcessor") {
             vecProcess.push_back(new SsdProcessor());
-        } else if (name == "VandleProcessor" || name=="Anl1471Processor") {
+        } else if (name == "VandleProcessor"/* || name=="Anl1471Processor"*/) {
             double res = processor.attribute("res").as_double(2.0);
             double offset = processor.attribute("offset").as_double(200.0);
             unsigned int numStarts = processor.attribute("NumStarts").as_int(2);
@@ -247,9 +247,9 @@ void DetectorDriver::LoadProcessors(Messenger& m) {
         } else if (name == "PspmtProcessor") {
             vecProcess.push_back(new PspmtProcessor());
 	}
-	// else if (name == "Anl1471Processor") {
-	    //vecProcess.push_back(new Anl1471Processor());
-	//}
+	 else if (name == "Anl1471Processor") {
+	    vecProcess.push_back(new Anl1471Processor());
+	}
 #ifdef useroot
         else if (name == "RootProcessor") {
             vecProcess.push_back(new RootProcessor("tree.root", "tree"));
