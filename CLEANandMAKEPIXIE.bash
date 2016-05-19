@@ -1,0 +1,1 @@
+make clean -C build/ && make -C build/ -j 20 install

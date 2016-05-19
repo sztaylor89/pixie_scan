@@ -22,8 +22,10 @@
 #include "TimingMapBuilder.hpp"
 #include "VandleProcessor.hpp"
 
-double IS600Processor::tof_;
-double IS600Processor::qdc_;
+#ifdef useroot
+static double tof_;
+static double qdc_;
+#endif
 
 namespace dammIds {
     namespace experiment {
@@ -183,7 +185,6 @@ bool IS600Processor::Process(RawEvent &event) {
 		 GetProcessor("VandleProcessor"))->
 		CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
 
-	    bool notPrompt = corTof > 45.;
 	    bool inPeel = histo.BananaTest(bananaNum,
             corTof*plotMult_+plotOffset_,
             bar.GetQdc());
