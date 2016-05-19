@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+    <Author>
+        <Name>S. Z. Taylor </Name>
+        <Email>staylo65 at vols dot utk dot edu</Email>
+        <Date>April 19, 2016</Date>
+    </Author>
+
+    <Description>
+      Used for comparing Beta energy and timing signals.
+    </Description>
+
+    <Global>
+        <Revision version="F"/>
+        <EventWidth unit="s" value="1e-6"/>
+        <EnergyContraction value="1.0"/>
+        <Path>config/</Path>
+        <NumOfTraces value="50"/>
+    </Global>
+
+
+    <DetectorDriver>
+        <Analyzer name="TraceExtractor" type="beta" subtype="double"/>
+        <Analyzer name="WaveformAnalyzer"/>
+        <Analyzer name="FittingAnalyzer"/>
+        <Processor name="DoubleBetaProcessor"/>
+    </DetectorDriver>
+
+    <Map verbose_calibration="False" verbose_map="False" verbose_walk="False">
+      <Module number="0">
+            <Channel number="0" type="beta" subtype="double"
+                     tags="left,timing">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="1" type="beta" subtype="double"
+                     tags="right,timing">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="2" type="beta" subtype="double"
+                     tags="left,timing">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="3" type="beta" subtype="double"
+                     tags="right,timing">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="4" type="beta" subtype="double"
+                     tags="left,timing">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="5" type="beta" subtype="double"
+                     tags="right,timing">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="6" type="beta" subtype="double"
+                     tags="left,timing">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="7" type="beta" subtype="double"
+                     tags="right,timing">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="8" type="beta" subtype="double"
+                     tags="start,left">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="9" type="beta" subtype="double"
+                     tags="start,right">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="10" type="beta" subtype="double"
+                     tags="start,left">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="11" type="beta" subtype="double"
+                     tags="start,right">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="12" type="beta" subtype="double"
+                     tags="start,left">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="13" type="beta" subtype="double"
+                     tags="start,right">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="14" type="beta" subtype="double"
+                     tags="start,left">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+            <Channel number="15" type="beta" subtype="double"
+                     tags="start,right">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+        </Module>
+      <Module number="8">
+            <Channel number="0" type="ignore" subtype="ignore"
+                     tags="ignore">
+                <Calibration model="raw"> </Calibration>
+            </Channel>
+      </Module>
+    </Map>
+
+    <TreeCorrelator name="root" verbose="False">
+       <!-- <Place type="PlaceOR" name="Beta" fifo="10">
+            <Place type="PlaceThreshold" name="beta_double_16,18,20,22"
+                   low_limit="0.0" high_limit="16382" fifo="5"
+                replace="true"/>
+        </Place>
+
+       examples: from is599(below)
+       <Place type="PlaceOR" name="Beta" fifo="5">
+      <Place type="PlaceThreshold" name="DoubleBeta1"
+	          low_limit="50.0" high_limit="16382" replace="false"/>
+    </Place>
+    
+    <Place type="PlaceOR" name="Gamma">
+      <Place type="PlaceOR" name="Clover0">
+        <Place type="PlaceThreshold" name="ge_clover_high_0-3"
+               low_limit="20.0" high_limit="99999" replace="true"/>
+      </Place>
+      <Place type="PlaceOR" name="Clover1">
+        <Place type="PlaceThreshold" name="ge_clover_high_4-7"
+               low_limit="20.0" high_limit="99999" replace="true"/>
+      </Place>
+    </Place>
+    
+    <Place type="PlaceDetector" name="Vandle" reset="false"/>
+    <Place type="PlaceDetector" name="Proton" reset="false"/>
+    <Place type="PlaceDetector" name="Supercycle" reset="false"/>
+    <Place type="PlaceDetector" name="TapeMove" reset="false"/>
+    <Place type="PlaceDetector" name="Beam" reset="false"/>
+    <Place type="PlaceDetector" name="Cycle" reset="false"/>
+
+
+       !-->
+    </TreeCorrelator>
+
+    <TimeCalibration verbose_timing="False">
+        <Beta>
+        </Beta>
+    </TimeCalibration>
+
+    <Timing>
+        <Physical>
+            <NeutronMass unit="MeV/c/c" value="939.565560"/>
+            <SpeedOfLight unit="cm/ns" value="29.9792458"/>
+            <SpeedOfLightSmall unit="cm/ns" value="12.65822"/>
+            <SmallLength unit="cm" value="60.0"/>
+            <SpeedOfLightBig unit="cm/ns" value="15.22998"/>
+            <BigLength unit="cm" value="200.0"/>
+            <SpeedOfLightMedium unit="cm/ns" value="13.4414"/>
+            <MediumLength unit="cm" value="120.0"/>
+        </Physical>
+        <Trace>
+            <WaveformRange>
+	      <Range name="beta:double">
+                <Low value="20"/>
+                <High value="35"/>
+	      </Range>
+	      <Range name="beta:double:timing">
+                <Low value="5"/>
+                <High value="5"/>
+	      </Range>
+	    </WaveformRange>
+            <DiscriminationStart unit="sample" value="3"/>
+            <TrapezoidalWalk unit="ns" value="60"/>
+            <TraceDelay unit="ns" value="344"/>
+            <TraceLength unit="ns" value="496"/>
+            <QdcCompression value="1.0"/>
+        </Trace>
+
+        <Fitting>
+            <SigmaBaselineThresh value="3.0"/>
+            <SiPmtSigmaBaselineThresh value = "25.0"/>
+            <Parameters>
+	      <Pars name="vandle:small">
+		<Beta value="0.32969"/>
+		<Gamma value="0.212945"/>
+	      </Pars>
+	      <Pars name="vandle:medium">
+		<Beta value="0.254373"/>
+		<Gamma value="0.208072"/>
+	      </Pars>
+	      <Pars name="beta:double">
+		<Beta value="0.0223198"/>
+		<Gamma value="0.0994238"/>
+	      </Pars>
+	      <Pars name="beta:double:timing">
+		<Gamma value="1.4196495999"/>
+		<Beta value="0.0"/>
+	      </Pars>
+	    </Parameters>
+        </Fitting>
+    </Timing>
+
+    <Notebook file="notes.txt" mode="r"/>
+
+</Configuration>
