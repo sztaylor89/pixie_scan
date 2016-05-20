@@ -22,7 +22,7 @@
 #include "TimingMapBuilder.hpp"
 #include "VandleProcessor.hpp"
 
-double Anl1471Processor::qdc;
+double Anl1471Processor::qdc_;
 double Anl1471Processor::tof;
 double Anl1471Processor::vandle_;
 double Anl1471Processor::beta_;
@@ -36,6 +36,10 @@ double Anl1471Processor::SNRBR;
 double Anl1471Processor::SNRVL;
 double Anl1471Processor::SNRVR;
 
+static HighResTimingData::HrtRoot leftVandle;
+static HighResTimingData::HrtRoot rightVandle;
+static HighResTimingData::HrtRoot leftBeta;
+static HighResTimingData::HrtRoot rightBeta;
 
 namespace dammIds {
     namespace experiment {
@@ -82,6 +86,10 @@ Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRo
     roottree_->Branch("vandle",&vandle_,"VID:SNRVL:SNRVR:QDCVL:QDCVR");
     roottree_->Branch("beta",&beta_,"BID:SNRBL:SNRBR:QDCBL:QDCBR");
     roottree_->Branch("ge",&ge_,"GamEn");
+    roottree_->Branch("leftV",&leftVandle,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
+    roottree_->Branch("rightV",&rightVandle,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
+    roottree_->Branch("leftB",&leftBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
+    roottree_->Branch("rightB",&rightBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
     qdctof_ = new TH2D("qdctof","",1000,-100,900,16000,0,16000);
     Vsize = new TH1D("Vsize","",40,0,40);
     Bsize = new TH1D("Bsize","",40,0,40);
@@ -158,35 +166,33 @@ bool Anl1471Processor::Process(RawEvent &event) {
             BarDetector start = (*itStart).second;
             if(!start.GetHasEvent())
                 continue;
-
             double tofOffset = cal.GetTofOffset(startLoc);
             double tof = bar.GetCorTimeAve() -
                 start.GetCorTimeAve() + tofOffset;
-
             double corTof =
                 ((VandleProcessor*)DetectorDriver::get()->
 		 GetProcessor("VandleProcessor"))->
 		CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
-
-	    //	    bool notPrompt = corTof > 45.;
-	    // bool inPeel = histo.BananaTest(bananaNum,
-            //corTof*plotMult_+plotOffset_,
-            //bar.GetQdc());
 	    bool isLowStart = start.GetQdc() < 300;
 
 	    //stuff to fill root tree
+	    bar.GetLeftSide().FillRootStructure(leftVandle);
+	    bar.GetRightSide().FillRootStructure(rightVandle);
+	   
 	    VID=(*it).first.first;
 	    SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
 	    SNRVR=bar.GetRightSide().GetSignalToNoiseRatio();
-	    QDCVL=bar.GetLeftSide().GetTraceQdc();
-	    QDCVR=bar.GetRightSide().GetTraceQdc();
+	    //QDCVL=bar.GetLeftSide().GetTraceQdc();
+	    //QDCVR=bar.GetRightSide().GetTraceQdc();
 
 #ifdef useroot
         qdctof_->Fill(tof,bar.GetQdc());
-        qdc = bar.GetQdc();
+        qdc_ = bar.GetQdc();
         tof = tof;
         roottree_->Fill();
-        qdc = tof = VID = BID = SNRVL = SNRVR = -9999;
+	bar.GetLeftSide().ZeroRootStructure(leftVandle);
+	bar.GetRightSide().ZeroRootStructure(rightVandle);
+        qdc_ = tof = VID = BID = SNRVL = SNRVR = -9999;
 	GamEn = SNRBL = SNRBR = vandle_ = beta_ = ge_ = -9999;
 #endif
 
@@ -226,14 +232,30 @@ bool Anl1471Processor::Process(RawEvent &event) {
     } //(BarMap::iterator itBar
     //End processing for VANDLE bars
 
-    /*
+    
     //------------------ Double Beta Processing --------------
-    for(map<unsigned int, pair<double,double> >::iterator it = lrtBetas.begin();
-    it != lrtBetas.end(); it++)
-	plot(DD_PROTONBETA2TDIFF_VS_BETA2EN, it->second.second,
-	(it->second.first - lastProtonTime) /
-	(10e-3/Globals::get()->clockInSeconds()) );
-    */
+    for (BarMap::iterator it = betas.begin(); it !=  betas.end(); it++) {
+        TimingDefs::TimingIdentifier barId = (*it).first;
+        BarDetector bar = (*it).second; 
+    
+	if(!bar.GetHasEvent())
+            continue;
+
+
+	//stuff to fill root tree
+	bar.GetLeftSide().FillRootStructure(leftBeta);
+	bar.GetRightSide().FillRootStructure(rightBeta);
+
+#ifdef useroot
+        roottree_->Fill();
+	bar.GetLeftSide().ZeroRootStructure(leftBeta);
+	bar.GetRightSide().ZeroRootStructure(rightBeta)
+#endif
+
+
+    }
+    //end double beta processing
+
 	     
     /*
     //----------------- GE Processing -------------------
