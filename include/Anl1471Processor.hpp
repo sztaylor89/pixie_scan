@@ -54,12 +54,12 @@ private:
     TFile *rootfile_;
     TTree *roottree_;
     TH2D *qdctof_;
-    TH1D *Vsize_;
-    TH1D *Bsize_;
-    static double qdc_, tof_;
-    static double ge_, GamEn_;
-    static double vandle_, VID_, SNRVL_, SNRVR_, QDCVL_, QDCVR_;
-    static double beta_, BID_, SNRBL_, SNRBR_, QDCBL_, QDCBR_;
+    TH1D *Vsize;
+    TH1D *Bsize;
+    static double qdc, tof;
+    static double ge_, GamEn;
+    static double vandle_, VID, SNRVL, SNRVR, QDCVL, QDCVR;
+    static double beta_, BID, SNRBL, SNRBR, QDCBL, QDCBR;
 #endif
 };
 #endif

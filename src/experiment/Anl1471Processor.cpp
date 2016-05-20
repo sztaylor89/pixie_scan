@@ -22,19 +22,19 @@
 #include "TimingMapBuilder.hpp"
 #include "VandleProcessor.hpp"
 
-double Anl1471Processor::qdc_;
-double Anl1471Processor::tof_;
+double Anl1471Processor::qdc;
+double Anl1471Processor::tof;
 double Anl1471Processor::vandle_;
 double Anl1471Processor::beta_;
 double Anl1471Processor::ge_;
 
-double Anl1471Processor::VID_;
-double Anl1471Processor::BID_;
-double Anl1471Processor::GamEn_;
-double Anl1471Processor::SNRBL_;
-double Anl1471Processor::SNRBR_;
-double Anl1471Processor::SNRVL_;
-double Anl1471Processor::SNRVR_;
+double Anl1471Processor::VID;
+double Anl1471Processor::BID;
+double Anl1471Processor::GamEn;
+double Anl1471Processor::SNRBL;
+double Anl1471Processor::SNRBR;
+double Anl1471Processor::SNRVL;
+double Anl1471Processor::SNRVR;
 
 
 namespace dammIds {
@@ -49,10 +49,6 @@ namespace dammIds {
         const int DD_DEBUGGING7  = 7;
         const int DD_DEBUGGING8  = 8;
         const int DD_DEBUGGING9  = 9;
-        const int DD_PROTONBETA2TDIFF_VS_BETA2EN = 13;
-        const int D_ENERGY = 14;
-        const int D_ENERGYBETA = 15;
-        const int DD_PROTONGAMMATDIFF_VS_GAMMAEN = 16;
     }
 }//namespace dammIds
 
@@ -60,22 +56,13 @@ using namespace std;
 using namespace dammIds::experiment;
 
 void Anl1471Processor::DeclarePlots(void) {
-    DeclareHistogram2D(DD_DEBUGGING0, SC, SD, "QDC CTof- No Tape Move");
-    DeclareHistogram2D(DD_DEBUGGING1, SC, SD, "QDC ToF Ungated");
-    DeclareHistogram2D(DD_DEBUGGING2, SC, SC, "Cor ToF vs. Gamma E");
+    DeclareHistogram2D(DD_DEBUGGING0, SC, SD, "DEBUG0");
+    DeclareHistogram2D(DD_DEBUGGING1, SC, SD, "DEBUG1");
+    DeclareHistogram2D(DD_DEBUGGING2, SC, SC, "DEBUG2");
     DeclareHistogram1D(DD_DEBUGGING3, S7, "Vandle Multiplicity");
     DeclareHistogram1D(DD_DEBUGGING4, S7, "Beta Multiplicity");
-    DeclareHistogram2D(DD_DEBUGGING5, SC, SC, "Mult2 Sym Plot Tof ");
-    DeclareHistogram1D(DD_DEBUGGING6, SE, "LaBr3 RAW");
-    DeclareHistogram2D(DD_PROTONBETA2TDIFF_VS_BETA2EN, SD, SA, "BetaProton Tdiff vs. Beta Energy");
-
-    const int energyBins1  = SD;
-    DeclareHistogram1D(D_ENERGY, energyBins1,
-		       "Gamma singles ungated");
-    DeclareHistogram1D(D_ENERGYBETA, energyBins1,
-                       "Gamma singles beta gated");
-    DeclareHistogram2D(DD_PROTONGAMMATDIFF_VS_GAMMAEN,
-		       SD, SB, "GammaProton TDIFF vs. Gamma Energy");
+    DeclareHistogram2D(DD_DEBUGGING5, SC, SC, "DEBUG5");
+    DeclareHistogram1D(DD_DEBUGGING6, SE, "DEBUG6");
 }
 
 Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRocessor") {
@@ -92,12 +79,12 @@ Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRo
     rootname << temp << ".root";
     rootfile_ = new TFile(rootname.str().c_str(),"RECREATE");
     roottree_ = new TTree("ANL","");
-    roottree_->Branch("vandle",&vandle_,"VID_:SNRVL_:SNRVR_:QDCVL_:QDCVR_");
-    roottree_->Branch("beta",&beta_,"BID_:SNRBL_:SNRBR_:QDCBL_:QDCBR_");
+    roottree_->Branch("vandle",&vandle_,"VID:SNRVL:SNRVR:QDCVL:QDCVR");
+    roottree_->Branch("beta",&beta_,"BID:SNRBL:SNRBR:QDCBL:QDCBR");
     roottree_->Branch("ge",&ge_,"GamEn");
     qdctof_ = new TH2D("qdctof","",1000,-100,900,16000,0,16000);
-    Vsize_ = new TH1D("Vsize","",40,0,40);
-    Bsize_ = new TH1D("Bsize","",40,0,40);
+    Vsize = new TH1D("Vsize","",40,0,40);
+    Bsize = new TH1D("Bsize","",40,0,40);
 #endif
 }
 
@@ -119,7 +106,7 @@ bool Anl1471Processor::PreProcess(RawEvent &event){
 }
 
 
-//where evrything is done
+//where everything is done
 bool Anl1471Processor::Process(RawEvent &event) {
     if (!EventProcessor::Process(event))
         return(false);
@@ -148,22 +135,12 @@ bool Anl1471Processor::Process(RawEvent &event) {
     }
 
 #ifdef useroot
-    Vsize_->Fill(vbars.size());
-    Bsize_->Fill(betas.size());
+    Vsize->Fill(vbars.size());
+    Bsize->Fill(betas.size());
 #endif
-
-    //Obtain some useful logic statuses
-    //    double lastProtonTime =
-    //	TreeCorrelator::get()->place("logic_t1_0")->last().time;
-    // bool isTapeMoving = TreeCorrelator::get()->place("TapeMove")->status();
-
-    //int bananaNum = 2;
-    //bool hasMultOne = vbars.size() == 1;
-    //bool hasMultTwo = vbars.size() == 2;
-    //bool isFirst = true;
-
     plot(DD_DEBUGGING3, vbars.size());
     plot(DD_DEBUGGING4, betas.size());
+
     //Begin processing for VANDLE bars
     for (BarMap::iterator it = vbars.begin(); it !=  vbars.end(); it++) {
         TimingDefs::TimingIdentifier barId = (*it).first;
@@ -197,28 +174,25 @@ bool Anl1471Processor::Process(RawEvent &event) {
             //bar.GetQdc());
 	    bool isLowStart = start.GetQdc() < 300;
 
+	    //stuff to fill root tree
+	    VID=(*it).first.first;
+	    SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
+	    SNRVR=bar.GetRightSide().GetSignalToNoiseRatio();
+	    QDCVL=bar.GetLeftSide().GetTraceQdc();
+	    QDCVR=bar.GetRightSide().GetTraceQdc();
 
 #ifdef useroot
         qdctof_->Fill(tof,bar.GetQdc());
-        qdc_ = bar.GetQdc();
-        tof_ = tof;
+        qdc = bar.GetQdc();
+        tof = tof;
         roottree_->Fill();
-        qdc_ = tof_ = VID_ = BID_ = SNRVL_ = SNRVR_ = -9999;
-	GamEn_ = SNRBL_ = SNRBR_ = vandle_ = beta_ = ge_ = -9999;
+        qdc = tof = VID = BID = SNRVL = SNRVR = -9999;
+	GamEn = SNRBL = SNRBR = vandle_ = beta_ = ge_ = -9999;
 #endif
 
 	    plot(DD_DEBUGGING1, tof*plotMult_+plotOffset_, bar.GetQdc());
-	    //if(!isTapeMoving && !isLowStart)
-	    //	plot(DD_DEBUGGING0, corTof*plotMult_+plotOffset_,bar.GetQdc());
-	    //if(hasMultOne)
-	    //	plot(DD_DEBUGGING4, corTof*plotMult_+plotOffset_, bar.GetQdc());
-
 	    /*
-	    ///Starting to look for 2n coincidences in VANDLE
-	    BarMap::iterator itTemp = it;
-	    itTemp++;
-
-	    for (BarMap::iterator it2 = itTemp; it2 !=  vbars.end(); it2++) {
+	      for (BarMap::iterator it2 = itTemp; it2 !=  vbars.end(); it2++) {
 		TimingDefs::TimingIdentifier barId2 = (*it2).first;
 		BarDetector bar2 = (*it2).second;
 
@@ -239,10 +213,6 @@ bool Anl1471Processor::Process(RawEvent &event) {
 		    ((VandleProcessor*)DetectorDriver::get()->
 		     GetProcessor("VandleProcessor"))->
 		    CorrectTOF(tof2, bar2.GetFlightPath(), cal2.GetZ0());
-
-		bool inPeel2 = histo.BananaTest(bananaNum,
-						corTof2*plotMult_+plotOffset_,
-						bar2.GetQdc());
 
 		if(hasMultTwo && inPeel && inPeel2 && !isAdjacent) {
 		    plot(DD_DEBUGGING5, corTof*plotMult_+plotOffset_,
