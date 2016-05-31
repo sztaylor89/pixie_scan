@@ -249,7 +249,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 #ifdef useroot
         roottree_->Fill();
 	bar.GetLeftSide().ZeroRootStructure(leftBeta);
-	bar.GetRightSide().ZeroRootStructure(rightBeta)
+	bar.GetRightSide().ZeroRootStructure(rightBeta);
 #endif
 
 
