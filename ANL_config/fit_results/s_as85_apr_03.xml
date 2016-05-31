@@ -1,0 +1,86 @@
+<small>
+    <Bar number="0" lroffset="-1.46291">
+        <TofOffset location="0" offset="80.82033"/>
+        <TofOffset location="1" offset="79.29386"/>
+        <TofOffset location="2" offset="78.18918"/>
+        <TofOffset location="3" offset="77.64181"/>
+    </Bar>
+    <Bar number="1" lroffset="-9.61885">
+        <TofOffset location="0" offset="83.65884"/>
+        <TofOffset location="1" offset="82.54549"/>
+        <TofOffset location="2" offset="81.02925"/>
+        <TofOffset location="3" offset="80.45983"/>
+    </Bar>
+    <Bar number="2" lroffset="-8.23554">
+        <TofOffset location="0" offset="83.79035"/>
+        <TofOffset location="1" offset="82.61462"/>
+        <TofOffset location="2" offset="81.00388"/>
+        <TofOffset location="3" offset="80.59678"/>
+    </Bar>
+    <Bar number="3" lroffset="-7.45118">
+        <TofOffset location="0" offset="85.19534"/>
+        <TofOffset location="1" offset="84.10062"/>
+        <TofOffset location="2" offset="82.69047"/>
+        <TofOffset location="3" offset="82.24937"/>
+    </Bar>
+    <Bar number="4" lroffset="-8.59045">
+        <TofOffset location="0" offset="83.52105"/>
+        <TofOffset location="1" offset="82.39613"/>
+        <TofOffset location="2" offset="80.91380"/>
+        <TofOffset location="3" offset="80.23317"/>
+    </Bar>
+    <Bar number="5" lroffset="-2.26895">
+        <TofOffset location="0" offset="88.34066"/>
+        <TofOffset location="1" offset="87.41919"/>
+        <TofOffset location="2" offset="85.99919"/>
+        <TofOffset location="3" offset="85.56589"/>
+    </Bar>
+    <Bar number="6" lroffset="-.64777">
+        <TofOffset location="0" offset="84.46217"/>
+        <TofOffset location="1" offset="83.14362"/>
+        <TofOffset location="2" offset="82.15113"/>
+        <TofOffset location="3" offset="81.46991"/>
+    </Bar>
+    <Bar number="7" lroffset=".06848">
+        <TofOffset location="0" offset="81.81137"/>
+        <TofOffset location="1" offset="80.78768"/>
+        <TofOffset location="2" offset="79.28818"/>
+        <TofOffset location="3" offset="78.81898"/>
+    </Bar>
+    <Bar number="8" lroffset=".52336">
+        <TofOffset location="0" offset="84.45471"/>
+        <TofOffset location="1" offset="83.53209"/>
+        <TofOffset location="2" offset="81.85194"/>
+        <TofOffset location="3" offset="81.45432"/>
+    </Bar>
+    <Bar number="9" lroffset="-1.54581">
+        <TofOffset location="0" offset="85.61861"/>
+        <TofOffset location="1" offset="84.60613"/>
+        <TofOffset location="2" offset="83.25953"/>
+        <TofOffset location="3" offset="82.45358"/>
+    </Bar>
+    <Bar number="10" lroffset="-.25257">
+        <TofOffset location="0" offset="85.03791"/>
+        <TofOffset location="1" offset="84.23634"/>
+        <TofOffset location="2" offset="82.66476"/>
+        <TofOffset location="3" offset="82.15673"/>
+    </Bar>
+    <Bar number="11" lroffset="-.96536">
+        <TofOffset location="0" offset="84.60121"/>
+        <TofOffset location="1" offset="83.49102"/>
+        <TofOffset location="2" offset="82.16893"/>
+        <TofOffset location="3" offset="81.46004"/>
+    </Bar>
+    <Bar number="12" lroffset=".73173">
+        <TofOffset location="0" offset="85.65902"/>
+        <TofOffset location="1" offset="84.53602"/>
+        <TofOffset location="2" offset="83.11730"/>
+        <TofOffset location="3" offset="82.40902"/>
+    </Bar>
+    <Bar number="13" lroffset="3.06680">
+        <TofOffset location="0" offset="85.08305"/>
+        <TofOffset location="1" offset="84.13800"/>
+        <TofOffset location="2" offset="82.68658"/>
+        <TofOffset location="3" offset="82.09902"/>
+    </Bar>
+</small>
