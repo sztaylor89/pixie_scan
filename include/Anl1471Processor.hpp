@@ -57,9 +57,9 @@ private:
     TH1D *Vsize;
     TH1D *Bsize;
     static double qdc_, tof;
-    static double ge_, GamEn;
-    static double vandle_, VID, SNRVL, SNRVR, QDCVL, QDCVR;
-    static double beta_, BID, SNRBL, SNRBR, QDCBL, QDCBR;
+    //static double ge_, GamEn;
+    //static double vandle_, VID, SNRVL, SNRVR, QDCVL, QDCVR;
+    //static double beta_, BID, SNRBL, SNRBR, QDCBL, QDCBR;
 #endif
 };
 #endif

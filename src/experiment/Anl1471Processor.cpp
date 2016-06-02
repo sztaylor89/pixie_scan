@@ -24,17 +24,17 @@
 
 double Anl1471Processor::qdc_;
 double Anl1471Processor::tof;
-double Anl1471Processor::vandle_;
-double Anl1471Processor::beta_;
-double Anl1471Processor::ge_;
+//double Anl1471Processor::vandle_;
+//double Anl1471Processor::beta_;
+//double Anl1471Processor::ge_;
 
-double Anl1471Processor::VID;
-double Anl1471Processor::BID;
-double Anl1471Processor::GamEn;
-double Anl1471Processor::SNRBL;
-double Anl1471Processor::SNRBR;
-double Anl1471Processor::SNRVL;
-double Anl1471Processor::SNRVR;
+//double Anl1471Processor::VID;
+//double Anl1471Processor::BID;
+//double Anl1471Processor::GamEn;
+//double Anl1471Processor::SNRBL;
+//double Anl1471Processor::SNRBR;
+//double Anl1471Processor::SNRVL;
+//double Anl1471Processor::SNRVR;
 
 static HighResTimingData::HrtRoot leftVandle;
 static HighResTimingData::HrtRoot rightVandle;
@@ -83,9 +83,9 @@ Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRo
     rootname << temp << ".root";
     rootfile_ = new TFile(rootname.str().c_str(),"RECREATE");
     roottree_ = new TTree("ANL","");
-    roottree_->Branch("vandle",&vandle_,"VID:SNRVL:SNRVR:QDCVL:QDCVR");
-    roottree_->Branch("beta",&beta_,"BID:SNRBL:SNRBR:QDCBL:QDCBR");
-    roottree_->Branch("ge",&ge_,"GamEn");
+    //roottree_->Branch("vandle",&vandle_,"VID:SNRVL:SNRVR:QDCVL:QDCVR");
+    //roottree_->Branch("beta",&beta_,"BID:SNRBL:SNRBR:QDCBL:QDCBR");
+    //roottree_->Branch("ge",&ge_,"GamEn");
     roottree_->Branch("leftV",&leftVandle,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
     roottree_->Branch("rightV",&rightVandle,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
     roottree_->Branch("leftB",&leftBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
@@ -102,6 +102,10 @@ Anl1471Processor::~Anl1471Processor() {
     rootfile_->Write();
     rootfile_->Close();
     delete(rootfile_);
+    //delete(roottree_);
+    //delete(qdctof_);
+    //delete(Vsize);
+    //delete(Bsize);
 #endif
 }
 
@@ -169,19 +173,23 @@ bool Anl1471Processor::Process(RawEvent &event) {
             double tofOffset = cal.GetTofOffset(startLoc);
             double tof = bar.GetCorTimeAve() -
                 start.GetCorTimeAve() + tofOffset;
-            double corTof =
-                ((VandleProcessor*)DetectorDriver::get()->
-		 GetProcessor("VandleProcessor"))->
-		CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
-	    bool isLowStart = start.GetQdc() < 300;
+            // double corTof =
+            //     ((VandleProcessor*)DetectorDriver::get()->
+	    // 	 GetProcessor("VandleProcessor"))->
+	    // 	CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
+	    //	    bool isLowStart = start.GetQdc() < 300;
 
 	    //stuff to fill root tree
 	    bar.GetLeftSide().FillRootStructure(leftVandle);
 	    bar.GetRightSide().FillRootStructure(rightVandle);
-	   
-	    VID=(*it).first.first;
-	    SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
-	    SNRVR=bar.GetRightSide().GetSignalToNoiseRatio();
+
+	    start.GetLeftSide().FillRootStructure(leftBeta);
+	    start.GetRightSide().FillRootStructure(rightBeta);
+
+
+	    //VID=(*it).first.first;
+	    //SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
+	    // SNRVR=bar.GetRightSide().GetSignalToNoiseRatio();
 	    //QDCVL=bar.GetLeftSide().GetTraceQdc();
 	    //QDCVR=bar.GetRightSide().GetTraceQdc();
 
@@ -192,93 +200,18 @@ bool Anl1471Processor::Process(RawEvent &event) {
         roottree_->Fill();
 	bar.GetLeftSide().ZeroRootStructure(leftVandle);
 	bar.GetRightSide().ZeroRootStructure(rightVandle);
-        qdc_ = tof = VID = BID = SNRVL = SNRVR = -9999;
-	GamEn = SNRBL = SNRBR = vandle_ = beta_ = ge_ = -9999;
+	start.GetLeftSide().ZeroRootStructure(leftBeta);
+	start.GetRightSide().ZeroRootStructure(rightBeta);
+        qdc_ = tof = -9999;
+	    //VID = BID = SNRVL = SNRVR = -9999;
+	    //GamEn = SNRBL = SNRBR = vandle_ = beta_ = ge_ = -9999;
 #endif
 
 	    plot(DD_DEBUGGING1, tof*plotMult_+plotOffset_, bar.GetQdc());
-	    /*
-	      for (BarMap::iterator it2 = itTemp; it2 !=  vbars.end(); it2++) {
-		TimingDefs::TimingIdentifier barId2 = (*it2).first;
-		BarDetector bar2 = (*it2).second;
 
-		if(!bar.GetHasEvent())
-		    continue;
-
-		unsigned int barLoc2 = barId2.first;
-
-		bool isAdjacent = abs((int)barLoc2 - (int)barLoc) < 1;
-
-		TimingCalibration cal2 = bar2.GetCalibration();
-
-		double tofOffset2 = cal2.GetTofOffset(startLoc);
-		double tof2 = bar2.GetCorTimeAve() -
-		    start.GetCorTimeAve() + tofOffset2;
-
-		double corTof2 =
-		    ((VandleProcessor*)DetectorDriver::get()->
-		     GetProcessor("VandleProcessor"))->
-		    CorrectTOF(tof2, bar2.GetFlightPath(), cal2.GetZ0());
-
-		if(hasMultTwo && inPeel && inPeel2 && !isAdjacent) {
-		    plot(DD_DEBUGGING5, corTof*plotMult_+plotOffset_,
-			 corTof2*plotMult_+plotOffset_);
-		    plot(DD_DEBUGGING5, corTof2*plotMult_+plotOffset_,
-			 corTof*plotMult_+plotOffset_);
-		}
-	    }
-*/
         } // for(TimingMap::iterator itStart
     } //(BarMap::iterator itBar
     //End processing for VANDLE bars
-
-    
-    //------------------ Double Beta Processing --------------
-    for (BarMap::iterator it = betas.begin(); it !=  betas.end(); it++) {
-        TimingDefs::TimingIdentifier barId = (*it).first;
-        BarDetector bar = (*it).second; 
-    
-	if(!bar.GetHasEvent())
-            continue;
-
-
-	//stuff to fill root tree
-	bar.GetLeftSide().FillRootStructure(leftBeta);
-	bar.GetRightSide().FillRootStructure(rightBeta);
-
-#ifdef useroot
-        roottree_->Fill();
-	bar.GetLeftSide().ZeroRootStructure(leftBeta);
-	bar.GetRightSide().ZeroRootStructure(rightBeta);
-#endif
-
-
-    }
-    //end double beta processing
-
-	     
-    /*
-    //----------------- GE Processing -------------------
-    bool hasBeta = TreeCorrelator::get()->place("Beta")->status();
-    double clockInSeconds = Globals::get()->clockInSeconds();
-    //plot with 10 ms bins
-    const double plotResolution = 10e-3 / clockInSeconds;
-    
-    for (vector<ChanEvent*>::iterator it1 = geEvts.begin();
-	 it1 != geEvts.end(); ++it1) {
-        ChanEvent *chan = *it1;
-	
-        double gEnergy = chan->GetCalEnergy();
-        double gTime   = chan->GetCorrectedTime();
-        if (gEnergy < 10.) //hard coded fix later.
-            continue;
-	
-        plot(D_ENERGY, gEnergy);
-	if(hasBeta)
-	    plot(D_ENERGYBETA, gEnergy);
-	plot(DD_PROTONGAMMATDIFF_VS_GAMMAEN, gEnergy ,
-	     (gTime - lastProtonTime) / plotResolution) ;
-    }*/
 
     EndProcess();
     return(true);
