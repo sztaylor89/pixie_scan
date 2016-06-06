@@ -193,7 +193,7 @@
   </TreeCorrelator>
 
   <TimeCalibration verbose_timing="False">
-    <Vandle>
+   <!-- <Vandle>
       <medium>
 	<Bar number="0" lroffset="-9.29528" z0="101.8" xoffset="-101.3" z0offset="0.0">
 	  <TofOffset location="0" offset="88.01924"/>
@@ -245,7 +245,7 @@
 	</Bar>
       </medium>
     </Vandle>
-  </TimeCalibration>
+-->  </TimeCalibration>
 
 
     <Physical>

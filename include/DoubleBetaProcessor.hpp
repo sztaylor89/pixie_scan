@@ -8,11 +8,7 @@
 
 #include "BarDetector.hpp"
 #include "EventProcessor.hpp"
-
-#ifdef useroot
-#include "TFile.h"
-#include "TH3D.h"
-#endif
+#include "HighResTimingData.hpp"
 
 //! A generic processor to be used as a template for others
 class DoubleBetaProcessor : public EventProcessor {
@@ -42,11 +38,5 @@ public:
 private:
     BarMap bars_;
     std::map<unsigned int, std::pair<double,double> > lrtbars_;
-    /*
-       #ifdef useroot
-       TFile* tfile_;
-       TH3D* thist_;
-       #endif
-    */
 };
 #endif // __DOUBLEBETAPROCESSOR_HPP__
