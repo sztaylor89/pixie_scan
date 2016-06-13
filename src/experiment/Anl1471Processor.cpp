@@ -110,13 +110,6 @@ Anl1471Processor::~Anl1471Processor() {
 }
 
 
-///We do nothing here since we're completely dependent on the resutls of others
-bool Anl1471Processor::PreProcess(RawEvent &event){
-    if (!EventProcessor::PreProcess(event))
-        return(false);
-    return(true);
-}
-
 
 //where everything is done
 bool Anl1471Processor::Process(RawEvent &event) {

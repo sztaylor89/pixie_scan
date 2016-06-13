@@ -17,8 +17,8 @@ namespace dammIds {
         const int DD_SINGLESQDC = 0;//!< ID for the singles QDC
         const int DD_QDC  = 1; //!< ID for the Bar QDC of the double beta detector
         const int DD_TDIFF = 2;//!< ID to plot the Time Difference between ends
-        const int DD_PP = 3;//!< ID to plot the phase-phase for your favorite bar (4)
-       	const int DD_QDCTDIFF = 4;//!< QDC vs. TDiff for your favorite bar (4), timing signals
+        const int DD_PP = 3;//!< ID to plot the phase-phase for your favorite bar (0)
+        const int DD_QDCTDIFF = 4;//!< QDC vs. TDiff for your favorite bar (0)
     }
 }
 
@@ -31,11 +31,10 @@ DoubleBetaProcessor::DoubleBetaProcessor():
 }
 
 void DoubleBetaProcessor::DeclarePlots(void) {
-    DeclareHistogram2D(DD_SINGLESQDC, SD, S4, "Location vs. Singles QDC");
-    DeclareHistogram2D(DD_QDC, SD, S4, "Location vs. Coincident QDC");
+    DeclareHistogram2D(DD_QDC, SD, S3, "Location vs. Coincident QDC");
     DeclareHistogram2D(DD_TDIFF, SB, S3, "Location vs. Time Difference");
-    DeclareHistogram2D(DD_PP, SC, SC,"Phase vs. Phase - Bar 4 Only");
-    DeclareHistogram2D(DD_QDCTDIFF, SC, SC,"(Bar 4)TDiff vs. Coincident QDC");
+    DeclareHistogram2D(DD_PP, SC, SC,"Phase vs. Phase - Bar 0 Only");
+    DeclareHistogram2D(DD_QDCTDIFF, SC, SE,"TimeDiff vs. Coincident QDC");
 }
 
 bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
@@ -67,19 +66,15 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
     
     for(BarMap::const_iterator it = bars_.begin(); it != bars_.end(); it++) {
         unsigned int barNum = (*it).first.first;
-        plot(DD_QDC, (*it).second.GetLeftSide().GetTraceQdc(), barNum * 2);
-        plot(DD_QDC, (*it).second.GetRightSide().GetTraceQdc(), barNum * 2 + 1);
-        plot(DD_TDIFF, (*it).second.GetTimeDifference()*resolution + offset, barNum);
-        if(barNum == 0) {	    
-	  plot(DD_PP, (*it).second.GetLeftSide().GetPhase()*resolution,
-                        (*it).second.GetRightSide().GetPhase()*resolution);
-            plot(DD_QDCTDIFF, (*it).second.GetTimeDifference()*resolution+offset,
-             (*it).second.GetQdc());
+	plot(DD_QDC, (*it).second.GetLeftSide().GetTraceQdc(), barNum * 2);
+	plot(DD_QDC, (*it).second.GetRightSide().GetTraceQdc(), barNum * 2 + 1);
+	plot(DD_TDIFF, (*it).second.GetTimeDifference()*resolution + offset, barNum);
+	if(barNum == 0) {
+	    plot(DD_PP, (*it).second.GetLeftSide().GetPhase()*resolution,
+		 (*it).second.GetRightSide().GetPhase()*resolution);
+	    plot(DD_QDCTDIFF, (*it).second.GetTimeDifference()*resolution+offset,
+		 (*it).second.GetQdc());
 	}
-	
-	// if(barNum == 3){
-	//     cout << "Beta 3 TDIFF = " << (*it).second.GetTimeDifference()*resolution+offset << endl;
-	// }
     }
     return(true);
 }

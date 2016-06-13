@@ -33,14 +33,12 @@ public:
     /** Constructor taking a list of detector types as an argument
      * \param [in] typeList : the list of bar types that are in the analysis
      * \param [in] res : The resolution of the DAMM histograms
-     * \param [in] offset : The offset of the DAMM histograms */
-     Anl1471Processor(const std::vector<std::string> &typeList,
-                  const double &res, const double &offset,
-                  const double &numStarts);
 
-    /** PreProcess does nothing since this is solely dependent on results
-	from other Processors*/
-     virtual bool PreProcess(RawEvent &event);
+     * \param [in] offset : The offset of the DAMM histograms 
+     * \param [in] numStarts : number of starts in the analysis */
+    Anl1471Processor(const std::vector<std::string> &typeList,
+                    const double &res, const double &offset,
+                    const double &numStarts);
 
     /** Process the event
     * \param [in] event : the event to process

@@ -41,8 +41,8 @@ namespace dammIds {
         const int DD_GAMMAENERGYVSTOF  = 10;//!< Gamma Energy vs. ToF
         const int DD_TQDCAVEVSTOF_VETO = 11;//!< QDC vs. ToF - Vetoed
         const int DD_TOFBARS_VETO      = 12;//!< ToF - Vetoed
-	
-	const int D_DEBUGGING    = 0+DEBUGGING_OFFSET;//!< Debugging countable problems
+
+        const int D_DEBUGGING    = 0+DEBUGGING_OFFSET;//!< Debugging countable problems
         const int DD_DEBUGGING   = 1+DEBUGGING_OFFSET;//!< 2D Hist to count problems
     }
 }//namespace dammIds
@@ -327,8 +327,6 @@ void VandleProcessor::AnalyzeStarts(void) {
             plot(DD_TQDCAVEVSCORTOF+histTypeOffset, corTof*plotMult_+plotOffset_,
                  bar.GetQdc());
 
-	   
-
             if (geSummary_) {
                 if (geSummary_->GetMult() > 0) {
                     const vector<ChanEvent *> &geList = geSummary_->GetList();
@@ -367,11 +365,7 @@ void VandleProcessor::FillVandleOnlyHists(void) {
              bar.GetRightSide().GetMaximumValue(), barId.first*2+1);
         plot(DD_TIMEDIFFBARS+OFFSET,
             bar.GetTimeDifference()*plotMult_+plotOffset_, barId.first);
-	// if (barId.first == 0){
-	//     cout << "VANDLE TDIFF = " << bar.GetTimeDifference()*plotMult_+plotOffset_ << endl;
-	// }
     }
-
 }
 
 unsigned int VandleProcessor::ReturnOffset(const std::string &type) {
