@@ -364,9 +364,10 @@ void VandleProcessor::FillVandleOnlyHists(void) {
         plot(DD_MAXIMUMBARS + OFFSET,
              bar.GetRightSide().GetMaximumValue(), barId.first*2+1);
         plot(DD_TIMEDIFFBARS+OFFSET,
-            bar.GetTimeDifference()*plotMult_+plotOffset_, barId.first);
+	     bar.GetTimeDifference()*plotMult_+plotOffset_, barId.first);
     }
 }
+
 
 unsigned int VandleProcessor::ReturnOffset(const std::string &type) {
     if(type == "small")
