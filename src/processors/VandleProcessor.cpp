@@ -42,6 +42,9 @@ namespace dammIds {
         const int DD_TQDCAVEVSTOF_VETO = 11;//!< QDC vs. ToF - Vetoed
         const int DD_TOFBARS_VETO      = 12;//!< ToF - Vetoed
 
+	const int DD_DEBUGGING0 = 13;//maxval vs tdiff 
+	const int DD_DEBUGGING1 = 14;//maxval vs tdiff 
+
         const int D_DEBUGGING    = 0+DEBUGGING_OFFSET;//!< Debugging countable problems
         const int DD_DEBUGGING   = 1+DEBUGGING_OFFSET;//!< 2D Hist to count problems
     }
@@ -162,6 +165,13 @@ void VandleProcessor::DeclarePlots(void) {
 //        "<E> VANDLE vs. CorTOF VANDLE - Gamma Veto");
 //        DeclareHistogram2D(DD_TOFBARS_VETO+MED_OFFSET, SC, S9,
 //        "Bar vs CorTOF - Gamma Veto");
+
+
+	DeclareHistogram2D(DD_DEBUGGING0, SB, SD, "left-MaxValvsTDIFF");
+    DeclareHistogram2D(DD_DEBUGGING1, SB, SD, "right-MaxValvsTDIFF");
+
+
+
     }
 
     DeclareHistogram1D(D_DEBUGGING, S5, "1D Debugging");
@@ -365,7 +375,20 @@ void VandleProcessor::FillVandleOnlyHists(void) {
              bar.GetRightSide().GetMaximumValue(), barId.first*2+1);
         plot(DD_TIMEDIFFBARS+OFFSET,
 	     bar.GetTimeDifference()*plotMult_+plotOffset_, barId.first);
+
+	 if (barId.first == 2){
+		plot(DD_DEBUGGING0,
+		     bar.GetTimeDifference()*2+1000,
+		     bar.GetLeftSide().GetMaximumValue());
+		plot(DD_DEBUGGING1,
+		     bar.GetTimeDifference()*2+1000,
+		     bar.GetRightSide().GetMaximumValue());
+		}
+
+
+
     }
+
 }
 
 

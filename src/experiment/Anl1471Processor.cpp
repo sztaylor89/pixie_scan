@@ -63,7 +63,7 @@ using namespace dammIds::experiment;
 void Anl1471Processor::DeclarePlots(void) {
     DeclareHistogram2D(DD_DEBUGGING0, SB, SD, "left-MaxValvsTDIFF");
     DeclareHistogram2D(DD_DEBUGGING1, SB, SD, "right-MaxValvsTDIFF");
-    DeclareHistogram2D(DD_DEBUGGING2, SC, SC, "DEBUG2");
+    DeclareHistogram2D(DD_DEBUGGING2, SB, S6, "TDIFF-vandle");
     DeclareHistogram1D(DD_DEBUGGING3, S7, "Vandle Multiplicity");
     DeclareHistogram1D(DD_DEBUGGING4, S7, "Beta Multiplicity");
     DeclareHistogram2D(DD_DEBUGGING5, SC, SC, "DEBUG5");
@@ -182,15 +182,16 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    start.GetRightSide().FillRootStructure(rightBeta);
 
 
-	    if (barId.first == 1){
+	    if (barId.first == 2){
 		plot(DD_DEBUGGING0,
-		     bar.GetTimeDifference()+1000,
+		     bar.GetTimeDifference()*2+1000,
 		     bar.GetLeftSide().GetMaximumValue());
 		plot(DD_DEBUGGING1,
-		     bar.GetTimeDifference()+1000,
+		     bar.GetTimeDifference()*2+1000,
 		     bar.GetRightSide().GetMaximumValue());
-
 		}
+	    plot(DD_DEBUGGING2,
+		 bar.GetTimeDifference()*2+1000, barId.first);
 
 	    //VID=(*it).first.first;
 	    //SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();

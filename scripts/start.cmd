@@ -1,3 +1,3 @@
 cmap scripts/cmapbill.dat
-fig 11
+fig 16
 dppb
