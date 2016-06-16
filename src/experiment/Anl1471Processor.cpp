@@ -181,7 +181,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    start.GetLeftSide().FillRootStructure(leftBeta);
 	    start.GetRightSide().FillRootStructure(rightBeta);
 
-
+	    //stuff to test TDIFF spike
 	    if (barId.first == 2){
 		plot(DD_DEBUGGING0,
 		     bar.GetTimeDifference()*2+1000,
