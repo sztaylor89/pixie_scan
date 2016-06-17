@@ -268,6 +268,14 @@
           <Low value="5"/>
           <High value="5"/>
 	</Range>
+	<Range name="vandle:small">
+          <Low value="5"/>
+          <High value="10"/>
+	</Range>
+	<Range name="vandle:medium">
+          <Low value="5"/>
+          <High value="10"/>
+	</Range>
       </WaveformRange>
       <DiscriminationStart unit="sample" value="3"/>
             <TrapezoidalWalk unit="ns" value="60"/>
