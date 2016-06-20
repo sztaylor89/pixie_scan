@@ -156,6 +156,18 @@ bool Anl1471Processor::Process(RawEvent &event) {
         if(!bar.GetHasEvent() || bar.GetType() == "small")
             continue;
 
+	//stuff to test TDIFF spike
+	    if (barId.first == 2){
+		plot(DD_DEBUGGING0,
+		     bar.GetTimeDifference()*2+1000,
+		     bar.GetLeftSide().GetMaximumValue());
+		plot(DD_DEBUGGING1,
+		     bar.GetTimeDifference()*2+1000,
+		     bar.GetRightSide().GetMaximumValue());
+		}
+	    plot(DD_DEBUGGING2,
+		 bar.GetTimeDifference()*2+1000, barId.first);
+
         //unsigned int barLoc = barId.first;
         TimingCalibration cal = bar.GetCalibration();
 
@@ -181,17 +193,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    start.GetLeftSide().FillRootStructure(leftBeta);
 	    start.GetRightSide().FillRootStructure(rightBeta);
 
-	    //stuff to test TDIFF spike
-	    if (barId.first == 2){
-		plot(DD_DEBUGGING0,
-		     bar.GetTimeDifference()*2+1000,
-		     bar.GetLeftSide().GetMaximumValue());
-		plot(DD_DEBUGGING1,
-		     bar.GetTimeDifference()*2+1000,
-		     bar.GetRightSide().GetMaximumValue());
-		}
-	    plot(DD_DEBUGGING2,
-		 bar.GetTimeDifference()*2+1000, barId.first);
+	    
 
 	    //VID=(*it).first.first;
 	    //SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
