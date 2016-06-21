@@ -66,7 +66,7 @@ void Anl1471Processor::DeclarePlots(void) {
     DeclareHistogram2D(DD_DEBUGGING2, SB, S6, "TDIFF-vandle");
     DeclareHistogram1D(DD_DEBUGGING3, S7, "Vandle Multiplicity");
     DeclareHistogram1D(DD_DEBUGGING4, S7, "Beta Multiplicity");
-    DeclareHistogram2D(DD_DEBUGGING5, SC, SC, "DEBUG5");
+    DeclareHistogram2D(DD_DEBUGGING5, SC, SD, "ANL-<E>-vs-CorTof");
     DeclareHistogram1D(DD_DEBUGGING6, SE, "DEBUG6");
 }
 
@@ -169,7 +169,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 		 bar.GetTimeDifference()*2+1000, barId.first);
 
         //unsigned int barLoc = barId.first;
-        TimingCalibration cal = bar.GetCalibration();
+        const TimingCalibration cal = bar.GetCalibration();
 
         for(BarMap::iterator itStart = betas.begin();
 	    itStart != betas.end(); itStart++) {
@@ -180,10 +180,15 @@ bool Anl1471Processor::Process(RawEvent &event) {
             double tofOffset = cal.GetTofOffset(startLoc);
             double tof = bar.GetCorTimeAve() -
                 start.GetCorTimeAve() + tofOffset;
-            // double corTof =
-            //     ((VandleProcessor*)DetectorDriver::get()->
-	    // 	 GetProcessor("VandleProcessor"))->
-	    // 	CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
+
+
+
+	    double corTof =
+		((VandleProcessor*)DetectorDriver::get()->
+	     	 GetProcessor("VandleProcessor"))->
+	     	CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
+
+
 	    //	    bool isLowStart = start.GetQdc() < 300;
 
 	    //stuff to fill root tree
@@ -193,7 +198,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    start.GetLeftSide().FillRootStructure(leftBeta);
 	    start.GetRightSide().FillRootStructure(rightBeta);
 
-	    
+	    plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
 
 	    //VID=(*it).first.first;
 	    //SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();

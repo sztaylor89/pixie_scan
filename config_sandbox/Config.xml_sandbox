@@ -33,6 +33,8 @@
   </DetectorDriver>
 
   <Map verbose_calibration="False" verbose_map="False" verbose_walk="False">
+  
+<!--energy as start
     <Module number="0">
       <Channel number="0" type="beta" subtype="double"
                tags="left,timing">
@@ -99,7 +101,79 @@
         <Calibration model="raw"> </Calibration>
       </Channel>
     </Module>
-    <Module number="1">
+ -->
+
+<!-- timing as start-->
+    <Module number="0">
+      <Channel number="0" type="beta" subtype="double"
+               tags="left,timing,start">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="1" type="beta" subtype="double"
+               tags="right,timing,start">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="2" type="beta" subtype="double"
+                     tags="left,timing,start">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="3" type="beta" subtype="double"
+               tags="right,timing,start">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="4" type="beta" subtype="double"
+               tags="left,timing,start">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="5" type="beta" subtype="double"
+               tags="right,timing,start">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="6" type="beta" subtype="double"
+               tags="left,timing,start">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="7" type="beta" subtype="double"
+               tags="right,timing,start">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="8" type="beta" subtype="double"
+               tags="left">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="9" type="beta" subtype="double"
+               tags="right">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="10" type="beta" subtype="double"
+               tags="left">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="11" type="beta" subtype="double"
+               tags="right">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="12" type="beta" subtype="double"
+                     tags="left">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="13" type="beta" subtype="double"
+               tags="right">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="14" type="beta" subtype="double"
+               tags="left">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+      <Channel number="15" type="beta" subtype="double"
+               tags="right">
+        <Calibration model="raw"> </Calibration>
+      </Channel>
+    </Module>
+ 
+
+
+   <Module number="1">
       <Channel number="0" type="vandle" subtype="medium" tags="right">
         <Calibration model="raw"></Calibration>
       </Channel>
@@ -193,7 +267,7 @@
   </TreeCorrelator>
 
   <TimeCalibration verbose_timing="False">
-   <!-- <Vandle>
+    <Vandle>
       <medium>
 	<Bar number="0" lroffset="-9.29528" z0="101.8" xoffset="-101.3" z0offset="0.0">
 	  <TofOffset location="0" offset="88.01924"/>
@@ -245,7 +319,7 @@
 	</Bar>
       </medium>
     </Vandle>
--->  </TimeCalibration>
+  </TimeCalibration>
 
 
     <Physical>
