@@ -66,8 +66,8 @@ void Anl1471Processor::DeclarePlots(void) {
     DeclareHistogram2D(DD_DEBUGGING2, SB, S6, "TDIFF-vandle");
     DeclareHistogram1D(DD_DEBUGGING3, S7, "Vandle Multiplicity");
     DeclareHistogram1D(DD_DEBUGGING4, S7, "Beta Multiplicity");
-    DeclareHistogram2D(DD_DEBUGGING5, SC, SD, "ANL-<E>-vs-CorTof");
-    DeclareHistogram1D(DD_DEBUGGING6, SE, "DEBUG6");
+    DeclareHistogram2D(DD_DEBUGGING5, SC, SD, "ANL-medium-<E>-vs-CorTof");
+    DeclareHistogram2D(DD_DEBUGGING6, SC, SD, "ANL-small-<E>-vs-CorTof");
 }
 
 Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRocessor") {
@@ -153,7 +153,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
         TimingDefs::TimingIdentifier barId = (*it).first;
         BarDetector bar = (*it).second;
 
-        if(!bar.GetHasEvent() || bar.GetType() == "small")
+        if(!bar.GetHasEvent())
             continue;
 
 	//stuff to test TDIFF spike
@@ -198,7 +198,14 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    start.GetLeftSide().FillRootStructure(leftBeta);
 	    start.GetRightSide().FillRootStructure(rightBeta);
 
+	    //TOF Stuff
+        if(bar.GetType() == "medium")
 	    plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
+
+        if(bar.GetType() == "small")
+	    plot(DD_DEBUGGING6, corTof*2+1000, bar.GetQdc());
+
+
 
 	    //VID=(*it).first.first;
 	    //SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
