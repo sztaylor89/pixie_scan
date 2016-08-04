@@ -269,12 +269,11 @@ void VandleProcessor::AnalyzeBarStarts(void) {
                  barPlusStartLoc);
             plot(DD_CORTOFBARS, corTof*plotMult_+plotOffset_, barPlusStartLoc);
 
-            if(cal.GetTofOffset(startLoc) != 0) {
-                plot(DD_TQDCAVEVSTOF+histTypeOffset, tof*plotMult_+plotOffset_,
-                     bar.GetQdc());
-                plot(DD_TQDCAVEVSCORTOF+histTypeOffset,
-                     corTof*plotMult_+plotOffset_, bar.GetQdc());
-            }
+	    plot(DD_TQDCAVEVSTOF+histTypeOffset, tof*plotMult_+plotOffset_,
+		 bar.GetQdc());
+	    plot(DD_TQDCAVEVSCORTOF+histTypeOffset,
+		 corTof*plotMult_+plotOffset_, bar.GetQdc());
+            
 
             if (geSummary_) {
                 if (geSummary_->GetMult() > 0) {

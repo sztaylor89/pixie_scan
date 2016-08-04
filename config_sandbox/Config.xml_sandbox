@@ -47,6 +47,7 @@
   <Map verbose_calibration="False" verbose_map="False" verbose_walk="False">
   
 <!--energy as start-->
+
     <Module number="0">
       <Channel number="0" type="beta" subtype="double"
                tags="left,timing">

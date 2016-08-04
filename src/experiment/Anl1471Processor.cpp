@@ -127,12 +127,27 @@ bool Anl1471Processor::Process(RawEvent &event) {
     if(event.GetSummary("vandle")->GetList().size() != 0)
         vbars = ((VandleProcessor*)DetectorDriver::get()->
             GetProcessor("VandleProcessor"))->GetBars();
-    if(event.GetSummary("beta:double")->GetList().size() != 0) {
-        betas = ((DoubleBetaProcessor*)DetectorDriver::get()->
-            GetProcessor("DoubleBetaProcessor"))->GetBars();
-        lrtBetas = ((DoubleBetaProcessor*)DetectorDriver::get()->
-            GetProcessor("DoubleBetaProcessor"))->GetLowResBars();
-    }
+    // if(event.GetSummary("beta:double")->GetList().size() != 0) {
+    //     betas = ((DoubleBetaProcessor*)DetectorDriver::get()->
+    //         GetProcessor("DoubleBetaProcessor"))->GetBars();
+    //     lrtBetas = ((DoubleBetaProcessor*)DetectorDriver::get()->
+    //         GetProcessor("DoubleBetaProcessor"))->GetLowResBars();
+    // }
+
+    //TESTING STUFF
+     // if(event.GetSummary("beta:double:start")->GetList().size() != 0) {
+     //     betas = ((DoubleBetaProcessor*)DetectorDriver::get()->
+     // 		  GetProcessor("DoubleBetaProcessor"))->GetBars();}
+
+
+    BarMap barStarts_;
+    static const vector<ChanEvent*> &doubleBetaStarts =
+        event.GetSummary("beta:double:start")->GetList();
+    BarBuilder startBars(doubleBetaStarts);
+    startBars.BuildBars();
+    barStarts_ = startBars.GetBarMap();
+
+
     if(event.GetSummary("ge")->GetList().size() != 0) {
         geEvts = ((GeProcessor*)DetectorDriver::get()->
             GetProcessor("GeProcessor"))->GetGeEvents();
@@ -171,8 +186,13 @@ bool Anl1471Processor::Process(RawEvent &event) {
         //unsigned int barLoc = barId.first;
         const TimingCalibration cal = bar.GetCalibration();
 
-        for(BarMap::iterator itStart = betas.begin();
-	    itStart != betas.end(); itStart++) {
+
+        for(BarMap::iterator itStart = barStarts_.begin();
+	    itStart != barStarts_.end(); itStart++) {
+	// for(BarMap::iterator itStart = betas.begin();
+	//  itStart != betas.end(); itStart++) {
+	    BarDetector beta_start = (*itStart).second;
+
 	    unsigned int startLoc = (*itStart).first.first;
             BarDetector start = (*itStart).second;
             if(!start.GetHasEvent())
@@ -199,14 +219,19 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    start.GetRightSide().FillRootStructure(rightBeta);
 
 	    //TOF Stuff
-        if(bar.GetType() == "medium")
-	    plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
+	    if(beta_start.GetLeftSide().GetSignalToNoiseRatio() > 15 &&
+	       beta_start.GetRightSide().GetSignalToNoiseRatio() > 15){
+		
+		if(beta_start.GetLeftSide().GetTraceQdc() > 2000 &&
+	       beta_start.GetRightSide().GetTraceQdc() > 2000){
+		    if(bar.GetType() == "medium")
+			plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
 
-        if(bar.GetType() == "small")
-	    plot(DD_DEBUGGING6, corTof*2+1000, bar.GetQdc());
+		    if(bar.GetType() == "small")
+			plot(DD_DEBUGGING6, corTof*2+1000, bar.GetQdc());
 
-
-
+		}
+	    }
 	    //VID=(*it).first.first;
 	    //SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
 	    // SNRVR=bar.GetRightSide().GetSignalToNoiseRatio();
@@ -232,7 +257,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
         } // for(TimingMap::iterator itStart
     } //(BarMap::iterator itBar
     //End processing for VANDLE bars
-
+     
     EndProcess();
     return(true);
 }
