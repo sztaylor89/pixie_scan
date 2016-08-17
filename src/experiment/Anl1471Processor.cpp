@@ -218,20 +218,32 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    start.GetLeftSide().FillRootStructure(leftBeta);
 	    start.GetRightSide().FillRootStructure(rightBeta);
 
-	    //TOF Stuff
-	    if(beta_start.GetLeftSide().GetSignalToNoiseRatio() > 15 &&
+	    //TOF cuts Stuff
+            /*if(beta_start.GetLeftSide().GetSignalToNoiseRatio() > 15 &&
 	       beta_start.GetRightSide().GetSignalToNoiseRatio() > 15){
 		
 		if(beta_start.GetLeftSide().GetTraceQdc() > 2000 &&
-	       beta_start.GetRightSide().GetTraceQdc() > 2000){
+		   beta_start.GetRightSide().GetTraceQdc() > 2000){
 		    if(bar.GetType() == "medium")
 			plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
-
+		    
 		    if(bar.GetType() == "small")
 			plot(DD_DEBUGGING6, corTof*2+1000, bar.GetQdc());
-
+		    
 		}
+		}*/
+
+	    //tape move veto cut
+	    bool tapeMove = TreeCorrelator::get()->place("TapeMove")->status();
+	    if (tapeMove == 0){ //plot only if tape is NOT moving
+		if(bar.GetType() == "medium")
+		    plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
+		
+		if(bar.GetType() == "small")
+		    plot(DD_DEBUGGING6, corTof*2+1000, bar.GetQdc());
 	    }
+
+
 	    //VID=(*it).first.first;
 	    //SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
 	    // SNRVR=bar.GetRightSide().GetSignalToNoiseRatio();
