@@ -191,13 +191,13 @@
 
 
    <Module number="1">
-      <Channel number="0" type="vandle" subtype="medium" tags="right">
+<!--  <Channel number="0" type="vandle" subtype="medium" tags="right">
         <Calibration model="raw"></Calibration>
       </Channel>
       <Channel number="1" type="vandle" subtype="medium" tags="left">
         <Calibration model="raw"></Calibration>
       </Channel>
-      <Channel number="2" type="vandle" subtype="medium" tags="right">
+-->     <Channel number="2" type="vandle" subtype="medium" tags="right">
         <Calibration model="raw"></Calibration>
       </Channel>
       <Channel number="3" type="vandle" subtype="medium" tags="left">
@@ -272,13 +272,13 @@
             <Channel number="9" type="vandle" subtype="medium" tags="left">
                 <Calibration model="raw"></Calibration>
             </Channel>
-            <Channel number="10" type="vandle" subtype="medium" tags="right">
+<!--            <Channel number="10" type="vandle" subtype="medium" tags="right">
                 <Calibration model="raw"></Calibration>
             </Channel>
             <Channel number="11" type="vandle" subtype="medium" tags="left">
                 <Calibration model="raw"></Calibration>
             </Channel>
-            <Channel number="12" type="vandle" subtype="medium" tags="right">
+-->            <Channel number="12" type="vandle" subtype="medium" tags="right">
                 <Calibration model="raw"></Calibration>
             </Channel>
             <Channel number="13" type="vandle" subtype="medium" tags="left">
@@ -311,13 +311,13 @@
             <Channel number="5" type="vandle" subtype="medium" tags="left">
                 <Calibration model="raw"></Calibration>
             </Channel>
-            <Channel number="6" type="vandle" subtype="medium" tags="right">
+<!--            <Channel number="6" type="vandle" subtype="medium" tags="right">
                 <Calibration model="raw"></Calibration>
             </Channel>
             <Channel number="7" type="vandle" subtype="medium" tags="left">
                 <Calibration model="raw"></Calibration>
             </Channel>
-            <Channel number="8" type="vandle" subtype="medium" tags="right">
+-->            <Channel number="8" type="vandle" subtype="medium" tags="right">
                 <Calibration model="raw"></Calibration>
             </Channel>
             <Channel number="9" type="vandle" subtype="medium" tags="left">
@@ -395,13 +395,13 @@
         </Module>
 
         <Module number="5">
-            <Channel number="0" type="vandle" subtype="small" tags="right">
+<!--            <Channel number="0" type="vandle" subtype="small" tags="right">
                 <Calibration model="raw"></Calibration>
             </Channel>
             <Channel number="1" type="vandle" subtype="small" tags="left">
                 <Calibration model="raw"></Calibration>
             </Channel>
-            <Channel number="2" type="vandle" subtype="small" tags="right">
+-->            <Channel number="2" type="vandle" subtype="small" tags="right">
                 <Calibration model="raw"></Calibration>
             </Channel>
             <Channel number="3" type="vandle" subtype="small" tags="left">
