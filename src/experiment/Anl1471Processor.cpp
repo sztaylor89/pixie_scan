@@ -42,6 +42,35 @@ static HighResTimingData::HrtRoot rightVandle;
 static HighResTimingData::HrtRoot leftBeta;
 static HighResTimingData::HrtRoot rightBeta;
 
+unsigned int barType;
+
+struct VandleRoot{
+    double tof;
+    double qdc;
+    double snrl;
+    double snrr;
+    double pos;
+    double tdiff;
+    unsigned int vid;
+    unsigned int vtype;
+    unsigned int bid;
+    double ben;
+    double bqdcl;
+    double bqdcr;
+    double bsnrl;
+    double bsnrr;
+
+};
+
+struct TapeInfo{
+    unsigned int move;
+    unsigned int beam;
+};
+
+TapeInfo tapeinfo;
+VandleRoot vroot;
+
+
 namespace dammIds {
     namespace experiment {
         const int DD_DEBUGGING0  = 0;
@@ -67,8 +96,12 @@ void Anl1471Processor::DeclarePlots(void) {
     DeclareHistogram1D(DD_DEBUGGING3, S7, "Vandle Multiplicity");
     DeclareHistogram1D(DD_DEBUGGING4, S7, "Beta Multiplicity");
     DeclareHistogram2D(DD_DEBUGGING5, SC, SD, "ANL-medium-<E>-vs-CorTof");
-    DeclareHistogram2D(DD_DEBUGGING6, SC, SD, "ANL-small-<E>-vs-CorTof");
+    DeclareHistogram2D(DD_DEBUGGING6, SC, SD, "ANL-medium-vetoed");
+    DeclareHistogram2D(DD_DEBUGGING7, SC, SD, "ANL-small-<E>-vs-CorTof");
+    DeclareHistogram2D(DD_DEBUGGING8, SC, SD, "ANL-small-vetoed");
 }
+
+
 
 Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRocessor") {
     associatedTypes.insert("vandle");
@@ -87,15 +120,23 @@ Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRo
     //roottree_->Branch("vandle",&vandle_,"VID:SNRVL:SNRVR:QDCVL:QDCVR");
     //roottree_->Branch("beta",&beta_,"BID:SNRBL:SNRBR:QDCBL:QDCBR");
     //roottree_->Branch("ge",&ge_,"GamEn");
-    roottree_->Branch("leftV",&leftVandle,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
-    roottree_->Branch("rightV",&rightVandle,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
-    roottree_->Branch("leftB",&leftBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
-    roottree_->Branch("rightB",&rightBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
+    // roottree_->Branch("leftV",&leftVandle,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
+    // roottree_->Branch("rightV",&rightVandle,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
+    // roottree_->Branch("leftB",&leftBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
+    // roottree_->Branch("rightB",&rightBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
+
+    roottree_->Branch("vandle", &vroot, "tof/D:qdc/D:snrl/D:snrr/D:pos/D:tdiff/D:vid/I:vtype/I:bid/I:ben/D:bqdcl/D:bqdcr/D:bsnrl/D:bsnrr/D");
+    roottree_->Branch("tape", &tapeinfo,"move/b:beam/b");
+
     qdctof_ = new TH2D("qdctof","",1000,-100,900,16000,0,16000);
     Vsize = new TH1D("Vsize","",40,0,40);
     Bsize = new TH1D("Bsize","",40,0,40);
 #endif
 }
+
+
+
+
 
 //Destructor closes/writes files and class
 Anl1471Processor::~Anl1471Processor() {
@@ -119,7 +160,8 @@ bool Anl1471Processor::Process(RawEvent &event) {
     double plotMult_ = 2;
     double plotOffset_ = 1000;
 
-    BarMap vbars, betas;
+    BarMap vbars;
+    BarMap betas;
     map<unsigned int, pair<double,double> > lrtBetas;
     vector<ChanEvent*> geEvts;
     vector<vector<AddBackEvent> > geAddback;
@@ -158,7 +200,19 @@ bool Anl1471Processor::Process(RawEvent &event) {
 #ifdef useroot
     Vsize->Fill(vbars.size());
     Bsize->Fill(betas.size());
+
+
+    if(TreeCorrelator::get()->place("TapeMove")->status())
+        tapeinfo.move = 1;
+    else
+        tapeinfo.move = 0;
+    if(TreeCorrelator::get()->place("Beam")->status())
+        tapeinfo.beam = 1;
+    else
+        tapeinfo.beam = 0;
 #endif
+
+
     plot(DD_DEBUGGING3, vbars.size());
     plot(DD_DEBUGGING4, betas.size());
     
@@ -170,6 +224,12 @@ bool Anl1471Processor::Process(RawEvent &event) {
 
         if(!bar.GetHasEvent())
             continue;
+
+	if(bar.GetType() == "small")
+	    barType = 0;
+	else if (bar.GetType() == "medium")
+	    barType = 1;
+
 
 	//stuff to test TDIFF spike
 	    if (barId.first == 2){
@@ -183,7 +243,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    plot(DD_DEBUGGING2,
 		 bar.GetTimeDifference()*2+1000, barId.first);
 
-        //unsigned int barLoc = barId.first;
+        unsigned int barLoc = barId.first;
         const TimingCalibration cal = bar.GetCalibration();
 
 
@@ -192,6 +252,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	// for(BarMap::iterator itStart = betas.begin();
 	//  itStart != betas.end(); itStart++) {
 	    BarDetector beta_start = (*itStart).second;
+
 
 	    unsigned int startLoc = (*itStart).first.first;
             BarDetector start = (*itStart).second;
@@ -209,14 +270,12 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	     	CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
 
 
-	    //	    bool isLowStart = start.GetQdc() < 300;
-
 	    //stuff to fill root tree
-	    bar.GetLeftSide().FillRootStructure(leftVandle);
-	    bar.GetRightSide().FillRootStructure(rightVandle);
+	    // bar.GetLeftSide().FillRootStructure(leftVandle);
+	    // bar.GetRightSide().FillRootStructure(rightVandle);
 
-	    start.GetLeftSide().FillRootStructure(leftBeta);
-	    start.GetRightSide().FillRootStructure(rightBeta);
+	    // start.GetLeftSide().FillRootStructure(leftBeta);
+	    // start.GetRightSide().FillRootStructure(rightBeta);
 
 	    //TOF cuts Stuff
             /*if(beta_start.GetLeftSide().GetSignalToNoiseRatio() > 15 &&
@@ -233,15 +292,45 @@ bool Anl1471Processor::Process(RawEvent &event) {
 		}
 		}*/
 
-	    //tape move veto cut
+
+	    //tape move veto cut damm
 	    bool tapeMove = TreeCorrelator::get()->place("TapeMove")->status();
 	    if (tapeMove == 0){ //plot only if tape is NOT moving
 		if(bar.GetType() == "medium")
 		    plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
 		
 		if(bar.GetType() == "small")
-		    plot(DD_DEBUGGING6, corTof*2+1000, bar.GetQdc());
+		    plot(DD_DEBUGGING7, corTof*2+1000, bar.GetQdc());
 	    }
+
+	    if (tapeMove == 1){ //plot only if tape is moving
+		if(bar.GetType() == "medium")
+		    plot(DD_DEBUGGING6, corTof*2+1000, bar.GetQdc());
+		
+		if(bar.GetType() == "small")
+		    plot(DD_DEBUGGING8, corTof*2+1000, bar.GetQdc());
+	    }
+
+
+
+
+#ifdef useroot
+	    vroot.tof   = corTof;
+	    vroot.qdc   = bar.GetQdc();
+	    vroot.snrl  = bar.GetLeftSide().GetSignalToNoiseRatio();
+	    vroot.snrr  = bar.GetRightSide().GetSignalToNoiseRatio();
+	    vroot.pos   = bar.GetQdcPosition();
+	    vroot.tdiff = bar.GetTimeDifference();
+	    vroot.vid   = barLoc;
+	    vroot.vtype = barType;
+	    vroot.bid = startLoc;
+	    vroot.ben = beta_start.GetQdc();
+	    vroot.bqdcl = beta_start.GetLeftSide().GetTraceQdc();
+	    vroot.bqdcr = beta_start.GetRightSide().GetTraceQdc();
+	    vroot.bsnrl = beta_start.GetLeftSide().GetSignalToNoiseRatio();
+	    vroot.bsnrr = beta_start.GetRightSide().GetSignalToNoiseRatio();
+#endif
+
 
 
 	    //VID=(*it).first.first;
