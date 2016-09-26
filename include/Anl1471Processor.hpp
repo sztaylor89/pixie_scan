@@ -54,6 +54,7 @@ private:
     TH2D *qdctof_;
     TH1D *Vsize;
     TH1D *Bsize;
+    TH2D *BETA;
     static double qdc_, tof;
     //static double ge_, GamEn;
     //static double vandle_, VID, SNRVL, SNRVR, QDCVL, QDCVR;

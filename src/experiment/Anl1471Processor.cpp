@@ -51,14 +51,14 @@ struct VandleRoot{
     double snrr;
     double pos;
     double tdiff;
-    unsigned int vid;
-    unsigned int vtype;
-    unsigned int bid;
     double ben;
     double bqdcl;
     double bqdcr;
     double bsnrl;
     double bsnrr;
+    unsigned int vid;
+    unsigned int vtype;
+    unsigned int bid;
 
 };
 
@@ -99,6 +99,7 @@ void Anl1471Processor::DeclarePlots(void) {
     DeclareHistogram2D(DD_DEBUGGING6, SC, SD, "ANL-medium-vetoed");
     DeclareHistogram2D(DD_DEBUGGING7, SC, SD, "ANL-small-<E>-vs-CorTof");
     DeclareHistogram2D(DD_DEBUGGING8, SC, SD, "ANL-small-vetoed");
+    DeclareHistogram2D(DD_DEBUGGING9, SD, S6, "BSNRLvsBQDCL");
 }
 
 
@@ -125,12 +126,13 @@ Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRo
     // roottree_->Branch("leftB",&leftBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
     // roottree_->Branch("rightB",&rightBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
 
-    roottree_->Branch("vandle", &vroot, "tof/D:qdc/D:snrl/D:snrr/D:pos/D:tdiff/D:vid/I:vtype/I:bid/I:ben/D:bqdcl/D:bqdcr/D:bsnrl/D:bsnrr/D");
+    roottree_->Branch("vandle", &vroot, "tof/D:qdc/D:snrl/D:snrr/D:pos/D:tdiff/D:ben/D:bqdcl/D:bqdcr/D:bsnrl/D:bsnrr/D:vid/I:vtype/I:bid/I");
     roottree_->Branch("tape", &tapeinfo,"move/b:beam/b");
 
     qdctof_ = new TH2D("qdctof","",1000,-100,900,16000,0,16000);
     Vsize = new TH1D("Vsize","",40,0,40);
     Bsize = new TH1D("Bsize","",40,0,40);
+    BETA = new TH2D("BETA","",8192,0,8192,64,0,64);
 #endif
 }
 
@@ -311,7 +313,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 		    plot(DD_DEBUGGING8, corTof*2+1000, bar.GetQdc());
 	    }
 
-
+	    plot(DD_DEBUGGING9, beta_start.GetLeftSide().GetTraceQdc(), beta_start.GetLeftSide().GetSignalToNoiseRatio());
 
 
 #ifdef useroot
@@ -333,6 +335,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 
 
 
+
 	    //VID=(*it).first.first;
 	    //SNRVL=bar.GetLeftSide().GetSignalToNoiseRatio();
 	    // SNRVR=bar.GetRightSide().GetSignalToNoiseRatio();
@@ -340,15 +343,16 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    //QDCVR=bar.GetRightSide().GetTraceQdc();
 
 #ifdef useroot
-        qdctof_->Fill(tof,bar.GetQdc());
-        qdc_ = bar.GetQdc();
-        tof = tof;
-        roottree_->Fill();
-	bar.GetLeftSide().ZeroRootStructure(leftVandle);
-	bar.GetRightSide().ZeroRootStructure(rightVandle);
-	start.GetLeftSide().ZeroRootStructure(leftBeta);
-	start.GetRightSide().ZeroRootStructure(rightBeta);
-        qdc_ = tof = -9999;
+	    BETA->Fill(vroot.bqdcl,vroot.bsnrl);
+	    qdctof_->Fill(tof,bar.GetQdc());
+	    qdc_ = bar.GetQdc();
+	    tof = tof;
+	    roottree_->Fill();
+	    bar.GetLeftSide().ZeroRootStructure(leftVandle);
+	    bar.GetRightSide().ZeroRootStructure(rightVandle);
+	    beta_start.GetLeftSide().ZeroRootStructure(leftBeta);
+	    beta_start.GetRightSide().ZeroRootStructure(rightBeta);
+	    qdc_ = tof = -9999;
 	    //VID = BID = SNRVL = SNRVR = -9999;
 	    //GamEn = SNRBL = SNRBR = vandle_ = beta_ = ge_ = -9999;
 #endif
