@@ -56,6 +56,8 @@ struct VandleRoot{
     double bqdcr;
     double bsnrl;
     double bsnrr;
+    double cyc;
+    double bcyc;
     unsigned int vid;
     unsigned int vtype;
     unsigned int bid;
@@ -67,9 +69,20 @@ struct TapeInfo{
     unsigned int beam;
 };
 
+struct GammaRoot{
+    double gen;
+    double gtime;
+    double gcyc;
+    double gben;
+    double gbtime;
+    double gbcyc;
+    unsigned int gid;
+    unsigned int gbid;
+};
+
 TapeInfo tapeinfo;
 VandleRoot vroot;
-
+GammaRoot groot;
 
 namespace dammIds {
     namespace experiment {
@@ -126,8 +139,9 @@ Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRo
     // roottree_->Branch("leftB",&leftBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
     // roottree_->Branch("rightB",&rightBeta,"qdc/D:time:snr:wtime:phase:abase:sbase:id/I");
 
-    roottree_->Branch("vandle", &vroot, "tof/D:qdc/D:snrl/D:snrr/D:pos/D:tdiff/D:ben/D:bqdcl/D:bqdcr/D:bsnrl/D:bsnrr/D:vid/I:vtype/I:bid/I");
+    roottree_->Branch("vandle", &vroot, "tof/D:qdc/D:snrl/D:snrr/D:pos/D:tdiff/D:ben/D:bqdcl/D:bqdcr/D:bsnrl/D:bsnrr/D:cyc/D:bcyc/D:vid/I:vtype/I:bid/I");
     roottree_->Branch("tape", &tapeinfo,"move/b:beam/b");
+    roottree_->Branch("gamma", &groot,"gen/D:gtime/D:gcyc/D:gben/D:gbtime/D:gbcyc/D:gid/I:gbid/I");
 
     qdctof_ = new TH2D("qdctof","",1000,-100,900,16000,0,16000);
     Vsize = new TH1D("Vsize","",40,0,40);
