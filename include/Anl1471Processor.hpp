@@ -1,7 +1,7 @@
 /** \file Anl1471Processor.hpp
  * \brief A class to process data from the LeRIBSS 2012 campaign.
  *
- *\author S. V. Paulauskas, update by S. Z. Taylor
+ *\author S. Z. Taylor
  *\date September 19, 2015
  */
 #ifndef __ANL1471PROCESSOR_HPP_
@@ -50,10 +50,12 @@ private:
 
 #ifdef useroot
     TFile *rootfile_;
-    TTree *roottree_;
+    TTree *roottree1_;
+    TTree *roottree2_;
     TH2D *qdctof_;
     TH1D *Vsize;
     TH1D *Bsize;
+    TH1D *Gsize;
     TH2D *BETA;
     static double qdc_, tof;
     //static double ge_, GamEn;
