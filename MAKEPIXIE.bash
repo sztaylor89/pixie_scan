@@ -1,1 +1,1 @@
-make -C build/ -j 20 install
+make -C build/ -j 7 install

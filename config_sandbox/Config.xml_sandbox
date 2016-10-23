@@ -12,6 +12,7 @@
   
   <Global>
     <Revision version="F"/>
+    <BitResolution value="12"/>
     <EventWidth unit="s" value="1e-6"/>
     <EnergyContraction value="1.0"/>
     <Path>config/</Path>
@@ -22,7 +23,7 @@
   <DetectorDriver>
     <Analyzer name="TraceExtractor" type="beta" subtype="double"/>
     <Analyzer name="WaveformAnalyzer"/>
-    <Analyzer name="FittingAnalyzer"/>
+    <Analyzer name="FittingAnalyzer" type="gsl"/>
 
     <Processor name="GeProcessor"
             gamma_threshold="20.0"
@@ -36,12 +37,12 @@
             cycle_gate2_min="0.0"
             cycle_gate2_max="0.0" />
 
-    <Processor name="LogicProcessor"/>
+    <Processor name="LogicProcessor" double_stop="True" double_start="True"/>
 
     <Processor name="DoubleBetaProcessor"/>    
     <Processor name="Anl1471Processor"/>
     <Processor name="VandleProcessor"
-               types="small,medium" res="2" offset="1000"/>
+               types="small,medium" res="2" offset="1000" NumStarts="4"/>
   </DetectorDriver>
 
   <Map verbose_calibration="False" verbose_map="False" verbose_walk="False">
@@ -114,7 +115,7 @@
         <Calibration model="raw"> </Calibration>
       </Channel>
     </Module>
-
+-->
 <!-- energy as start-END-->
  
 
@@ -914,33 +915,33 @@
 	</Range>
       </WaveformRange>
       <DiscriminationStart unit="sample" value="3"/>
-            <TrapezoidalWalk unit="ns" value="60"/>
-            <TraceDelay unit="ns" value="344"/>
-            <TraceLength unit="ns" value="496"/>
-            <QdcCompression value="4.0"/>
+      <TrapezoidalWalk unit="ns" value="60"/>
+      <TraceDelay unit="ns" value="344"/>
+      <TraceLength unit="ns" value="496"/>
+      <QdcCompression value="4.0"/>
     </Trace>
     
     <Fitting>
       <SigmaBaselineThresh value="3.0"/>
       <SiPmtSigmaBaselineThresh value = "25.0"/>
-            <Parameters>
-	      <Pars name="vandle:small">
-		<Beta value="0.32969"/>
-		<Gamma value="0.212945"/>
-	      </Pars>
-	      <Pars name="vandle:medium">
-		<Beta value="0.254373"/>
-		<Gamma value="0.208072"/>
-	      </Pars>
-	      <Pars name="beta:double">
-		<Beta value="0.0223198"/>
-		<Gamma value="0.0994238"/>
-	      </Pars>
-	      <Pars name="beta:double:timing">
-		<Gamma value="1.4196495999"/>
-		<Beta value="0.0"/>
-	      </Pars>
-	    </Parameters>
+      <Parameters>
+	<Pars name="vandle:small">
+	  <Beta value="0.32969"/>
+	  <Gamma value="0.212945"/>
+	</Pars>
+	<Pars name="vandle:medium">
+	  <Beta value="0.254373"/>
+	  <Gamma value="0.208072"/>
+	</Pars>
+	<Pars name="beta:double">
+	  <Beta value="0.0223198"/>
+	  <Gamma value="0.0994238"/>
+	</Pars>
+	<Pars name="beta:double:timing">
+	  <Gamma value="1.4196495999"/>
+	  <Beta value="0.0"/>
+	</Pars>
+      </Parameters>
     </Fitting>
 
   
