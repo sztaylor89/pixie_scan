@@ -50,8 +50,8 @@ struct VandleRoot{
 };
 
 struct TapeInfo{
-    unsigned int move;
-    unsigned int beam;
+    bool move;
+    bool beam;
 };
 
 struct GammaRoot{
@@ -82,6 +82,8 @@ namespace dammIds {
         const int DD_DEBUGGING8  = 8;
         const int DD_DEBUGGING9  = 9;
 	const int D_tape = 10;
+	const int D_beam = 11;
+	const int DD_grow_decay = 12;
     }
 }//namespace dammIds
 
@@ -99,7 +101,9 @@ void Anl1471Processor::DeclarePlots(void) {
     DeclareHistogram2D(DD_DEBUGGING7, SC, SD, "ANL-small-<E>-vs-CorTof");
     DeclareHistogram2D(DD_DEBUGGING8, SC, SD, "ANL-small-vetoed");
     DeclareHistogram2D(DD_DEBUGGING9, SD, S6, "BSNRLvsBQDCL");
-    DeclareHistogram1D(D_tape, S2, "tape check");
+    DeclareHistogram1D(D_tape, S1, "tape move");
+    DeclareHistogram1D(D_beam, S1, "beam on/off");
+    DeclareHistogram2D(DD_grow_decay, SC, SA, "Grow/Decay");
 }//end declare plots
 
 
@@ -193,16 +197,18 @@ bool Anl1471Processor::Process(RawEvent &event) {
     Gsize->Fill(geEvts.size());
     
 
-    if(TreeCorrelator::get()->place("TapeMove")->status())
+    if(TreeCorrelator::get()->place("TapeMove")->status()){
         tapeinfo.move = 1;
-    else
+    }else{
         tapeinfo.move = 0;
+    }
     if(TreeCorrelator::get()->place("Beam")->status()){
         tapeinfo.beam = 1;
     }else{
         tapeinfo.beam = 0;
     }
-    plot(D_tape, tapeinfo.beam);
+    plot(D_tape, tapeinfo.move);
+    plot(D_beam, tapeinfo.beam);
 #endif
 
 
@@ -259,7 +265,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 
 
 	    //tape move veto cut damm
-	    /*	    bool tapeMove = TreeCorrelator::get()->place("TapeMove")->status();
+	    	    bool tapeMove = TreeCorrelator::get()->place("TapeMove")->status();
 	    if (tapeMove == 0){ //plot only if tape is NOT moving
 		if(bar.GetType() == "medium")
 		    plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
@@ -275,7 +281,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 		if(bar.GetType() == "small")
 		    plot(DD_DEBUGGING8, corTof*2+1000, bar.GetQdc());
 	    }
-	    */
+	    
 	    plot(DD_DEBUGGING9, beta_start.GetLeftSide().GetTraceQdc(),
 		 beta_start.GetLeftSide().GetSignalToNoiseRatio());
 
@@ -330,7 +336,8 @@ bool Anl1471Processor::Process(RawEvent &event) {
     if (geEvts.size() !=0){
 	for (vector<ChanEvent *>::const_iterator itGe = geEvts.begin();
                 itGe != geEvts.end(); itGe++) {
-	    double ge_energy,ge_time, gb_time_L, gb_time_R, gb_time, gb_en, gcyc_time=0.0;
+	    double ge_energy,ge_time, gb_time_L, gb_time_R, gb_time, grow_decay_time, gb_en, gcyc_time;
+	    ge_energy=ge_time=gb_time_L=gb_time_R=gb_time=grow_decay_time=gb_en=gcyc_time=0.0;
 	    int ge_id;
 	    int gb_startLoc;
 	    BarDetector gb_start;
@@ -342,6 +349,9 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    if (TreeCorrelator::get()->place("Cycle")->status()) {
 		gcyc_time = TreeCorrelator::get()->place("Cycle")->last().time;
 		gcyc_time *=  (Globals::get()->clockInSeconds() * 1.e9);//in ns now
+	       	grow_decay_time = (ge_time - gcyc_time)*1e-9*1e2;//in seconds, then ms
+		cout << ge_energy << endl << grow_decay_time << endl << endl;
+		plot(DD_grow_decay, ge_energy, grow_decay_time);
 	    }
 
 	    if (doubleBetaStarts.size() != 0){
@@ -351,7 +361,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 		    gb_startLoc = (*itGB).first.first;
 		    gb_en = gb_start.GetQdc();
 		    gb_time_L = gb_start.GetLeftSide().GetHighResTime();//GetCorrectedTime()??
-		    gb_time_R = gb_start.GetRightSide().GetHighResTime();//
+		    gb_time_R = gb_start.GetRightSide().GetHighResTime();//GetTimeAverage()??
 		    gb_time = (gb_time_L + gb_time_R)/2;
 		    gb_time *= (Globals::get()->clockInSeconds() * 1.e9);//in ns now
 		}
