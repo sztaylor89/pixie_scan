@@ -43,9 +43,9 @@ struct VandleRoot{
     double bsnrr;
     double cyc;
     double bcyc;
-    unsigned int vid;
-    unsigned int vtype;
-    unsigned int bid;
+    int vid;
+    int vtype;
+    int bid;
 
 };
 
@@ -61,8 +61,8 @@ struct GammaRoot{
     double gben;
     double gbtime;
     double gbcyc;
-    unsigned int gid;
-    unsigned int gbid;
+    int gid;
+    int gbid;
 };
 
 TapeInfo tapeinfo;
@@ -161,9 +161,11 @@ bool Anl1471Processor::Process(RawEvent &event) {
     double plotMult_ = 2;
     double plotOffset_ = 1000;
 
-    BarMap vbars;    
+    BarMap vbars,betas;
+    map<unsigned int, pair<double, double> > lrtBetas;
+
     BarMap betaStarts_;
-    BarMap betaSingles_;
+    //BarMap betaSingles_;
     vector<ChanEvent*> geEvts;
     vector<vector<AddBackEvent> > geAddback;
 
@@ -173,15 +175,25 @@ bool Anl1471Processor::Process(RawEvent &event) {
 
 
     static const vector<ChanEvent*> &doubleBetaStarts =
-        event.GetSummary("beta:double:start")->GetList();
+       event.GetSummary("beta:double:start")->GetList();
     BarBuilder startBars(doubleBetaStarts);
     startBars.BuildBars();
     betaStarts_ = startBars.GetBarMap();
 
+    //if(event.GetSummary("beta:double")->GetList().size() != 0) {
+    //    betas = ((DoubleBetaProcessor *) DetectorDriver::get()->
+    //            GetProcessor("DoubleBetaProcessor"))->GetBars();
+  //      if (event.GetSummary("beta:double")->GetList().size() != 0) {
+    //        lrtBetas = ((DoubleBetaProcessor *) DetectorDriver::get()->
+      //              GetProcessor("DoubleBetaProcessor"))->GetLowResBars();
+        //}
+    //}
 
-
-    //static const vector<ChanEvent*> & &doubleBetaSingles =
-    //	event.GetSummary("beta:double")->GetList();                 //Might be grabbing betas 2-3 times due to split and two beta types, may need to add tag to Config.XML
+    //static const vector<ChanEvent*> &doubleBetaSingles =
+    //	event.GetSummary("beta:double:singles")->GetList();
+    //BarBuilder gestartBars(doubleBetaSingles);
+    //gestartBars.BuildBars();
+    //betaSingles_=gestartBars.GetBarMap();
 
 
     if(event.GetSummary("ge")->GetList().size() != 0) {
@@ -337,9 +349,9 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	for (vector<ChanEvent *>::const_iterator itGe = geEvts.begin();
                 itGe != geEvts.end(); itGe++) {
 	    double ge_energy,ge_time, gb_time_L, gb_time_R, gb_time, grow_decay_time, gb_en, gcyc_time;
-	    ge_energy=ge_time=gb_time_L=gb_time_R=gb_time=grow_decay_time=gb_en=gcyc_time=0.0;
-	    int ge_id;
-	    int gb_startLoc;
+	    ge_energy=ge_time=gb_time_L=gb_time_R=gb_time=grow_decay_time=gb_en=gcyc_time=-9999.0;
+	    int ge_id=-9999;
+	    int gb_startLoc=-9999;
 	    BarDetector gb_start;
 	    ge_energy = (*itGe)->GetCalEnergy();
 	    ge_id = (*itGe)->GetChanID().GetLocation();
@@ -347,16 +359,16 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    ge_time *= (Globals::get()->clockInSeconds() * 1.e9);//in ns now
 	    
 	    if (TreeCorrelator::get()->place("Cycle")->status()) {
-		gcyc_time = TreeCorrelator::get()->place("Cycle")->last().time;
-		gcyc_time *=  (Globals::get()->clockInSeconds() * 1.e9);//in ns now
+            gcyc_time = TreeCorrelator::get()->place("Cycle")->last().time;
+		    gcyc_time *=  (Globals::get()->clockInSeconds() * 1.e9);//in ns now
 	       	grow_decay_time = (ge_time - gcyc_time)*1e-9*1e2;//in seconds, then ms
-		cout << ge_energy << endl << grow_decay_time << endl << endl;
+		//cout << ge_energy << endl << grow_decay_time << endl << endl;
 		plot(DD_grow_decay, ge_energy, grow_decay_time);
 	    }
 
 	    if (doubleBetaStarts.size() != 0){
-		for (BarMap::iterator itGB = betaStarts_.begin();//CHANGE STUFF HERE FOR NON TAGGED START BETAS
-		     itGB != betaStarts_.end(); itGB++){
+		for (BarMap::iterator itGB = betaStarts_.begin();
+                itGB != betaStarts_.end(); itGB++){
 		    gb_start = (*itGB).second;
 		    gb_startLoc = (*itGB).first.first;
 		    gb_en = gb_start.GetQdc();
