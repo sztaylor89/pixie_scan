@@ -1,5 +1,5 @@
 cmap scripts/cmapbill.dat
-fig 16
+fig 18
 dppb
 xc 900 1500
 yc 0 8000
