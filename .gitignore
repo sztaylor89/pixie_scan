@@ -37,3 +37,6 @@ LDF
 HIS/*
 LDF/*
 data
+
+#bash scripts
+SCANSTUFF.bash
