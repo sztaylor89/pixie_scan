@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name="bbb"
+name="ccc"
 data="/home/steve/Desktop/local_scan/ldf"
 
 rm -f $name.his $name.dat $name.drr $name.list $name.log
