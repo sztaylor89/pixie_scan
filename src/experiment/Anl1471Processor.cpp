@@ -43,6 +43,7 @@ struct VandleRoot{
     double bsnrr;
     double cyc;
     double bcyc;
+    double HPGE;
     int vid;
     int vtype;
     int bid;
@@ -76,10 +77,10 @@ namespace dammIds {
         const int DD_DEBUGGING2  = 2;
         const int DD_DEBUGGING3  = 3;
         const int DD_DEBUGGING4  = 4;
-        const int DD_DEBUGGING5  = 5;
-        const int DD_DEBUGGING6  = 6;
-        const int DD_DEBUGGING7  = 7;
-        const int DD_DEBUGGING8  = 8;
+        const int DD_MedCTOFvQDC  = 5;
+        const int DD_MedVetoed  = 6;
+        const int DD_SmCTOFvQDC  = 7;
+        const int DD_SmVetoed  = 8;
         const int DD_DEBUGGING9  = 9;
 	const int D_tape = 10;
 	const int D_beam = 11;
@@ -96,10 +97,10 @@ void Anl1471Processor::DeclarePlots(void) {
     DeclareHistogram2D(DD_DEBUGGING2, SB, S6, "TDIFF-vandle");
     DeclareHistogram1D(DD_DEBUGGING3, S7, "Vandle Multiplicity");
     DeclareHistogram1D(DD_DEBUGGING4, S7, "Beta Multiplicity");
-    DeclareHistogram2D(DD_DEBUGGING5, SC, SD, "ANL-medium-<E>-vs-CorTof");
-    DeclareHistogram2D(DD_DEBUGGING6, SC, SD, "ANL-medium-vetoed");
-    DeclareHistogram2D(DD_DEBUGGING7, SC, SD, "ANL-small-<E>-vs-CorTof");
-    DeclareHistogram2D(DD_DEBUGGING8, SC, SD, "ANL-small-vetoed");
+    DeclareHistogram2D(DD_MedCTOFvQDC, SC, SD, "ANL-medium-<E>-vs-CorTof");
+    DeclareHistogram2D(DD_MedVetoed, SC, SD, "ANL-medium-vetoed");
+    DeclareHistogram2D(DD_SmCTOFvQDC, SC, SD, "ANL-small-<E>-vs-CorTof");
+    DeclareHistogram2D(DD_SmVetoed, SC, SD, "ANL-small-vetoed");
     DeclareHistogram2D(DD_DEBUGGING9, SD, S6, "BSNRLvsBQDCL");
     DeclareHistogram1D(D_tape, S1, "tape move");
     DeclareHistogram1D(D_beam, S1, "beam on/off");
@@ -125,7 +126,7 @@ Anl1471Processor::Anl1471Processor() : EventProcessor(OFFSET, RANGE, "Anl1471PRo
     roottree1_ = new TTree("V","");
     roottree2_ = new TTree("G","");
 
-    roottree1_->Branch("vandle", &vroot, "tof/D:qdc/D:snrl/D:snrr/D:pos/D:tdiff/D:ben/D:bqdcl/D:bqdcr/D:bsnrl/D:bsnrr/D:cyc/D:bcyc/D:vid/I:vtype/I:bid/I");
+    roottree1_->Branch("vandle", &vroot, "tof/D:qdc/D:snrl/D:snrr/D:pos/D:tdiff/D:ben/D:bqdcl/D:bqdcr/D:bsnrl/D:bsnrr/D:cyc/D:bcyc/D:HPGE/D:vid/I:vtype/I:bid/I");
     roottree1_->Branch("tape", &tapeinfo,"move/b:beam/b");
 
     roottree2_->Branch("gamma", &groot,"gen/D:gtime/D:gcyc/D:gben/D:gbtime/D:gbcyc/D:gid/I:gbid/I");
@@ -260,43 +261,53 @@ bool Anl1471Processor::Process(RawEvent &event) {
 
         for(BarMap::iterator itStart = betaStarts_.begin();
 	    itStart != betaStarts_.end(); itStart++) {
-	    BarDetector beta_start = (*itStart).second;
-	    unsigned int startLoc = (*itStart).first.first;
-	    if(!beta_start.GetHasEvent())
+            BarDetector beta_start = (*itStart).second;
+            unsigned int startLoc = (*itStart).first.first;
+            if (!beta_start.GetHasEvent())
                 continue;
             double tofOffset = cal.GetTofOffset(startLoc);
             double tof = bar.GetCorTimeAve() -
-                beta_start.GetCorTimeAve() + tofOffset;
+                         beta_start.GetCorTimeAve() + tofOffset;
 
 
+            double corTof =
+                    ((VandleProcessor *) DetectorDriver::get()->
+                            GetProcessor("VandleProcessor"))->
+                            CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
 
-	    double corTof =
-		((VandleProcessor*)DetectorDriver::get()->
-	     	 GetProcessor("VandleProcessor"))->
-	     	CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
 
+            //tape move veto cut damm
+            bool tapeMove = TreeCorrelator::get()->place("TapeMove")->status();
+            if (tapeMove == 0) { //plot only if tape is NOT moving
+                if (bar.GetType() == "medium")
+                    plot(DD_MedCTOFvQDC, corTof * 2 + 1000, bar.GetQdc());
 
-	    //tape move veto cut damm
-	    	    bool tapeMove = TreeCorrelator::get()->place("TapeMove")->status();
-	    if (tapeMove == 0){ //plot only if tape is NOT moving
-		if(bar.GetType() == "medium")
-		    plot(DD_DEBUGGING5, corTof*2+1000, bar.GetQdc());
-		
-		if(bar.GetType() == "small")
-		    plot(DD_DEBUGGING7, corTof*2+1000, bar.GetQdc());
-	    }
+                if (bar.GetType() == "small")
+                    plot(DD_SmCTOFvQDC, corTof * 2 + 1000, bar.GetQdc());
+            }
 
-	    if (tapeMove == 1){ //plot only if tape is moving
-		if(bar.GetType() == "medium")
-		    plot(DD_DEBUGGING6, corTof*2+1000, bar.GetQdc());
-		
-		if(bar.GetType() == "small")
-		    plot(DD_DEBUGGING8, corTof*2+1000, bar.GetQdc());
-	    }
-	    
-	    plot(DD_DEBUGGING9, beta_start.GetLeftSide().GetTraceQdc(),
-		 beta_start.GetLeftSide().GetSignalToNoiseRatio());
+            if (tapeMove == 1) { //plot only if tape is moving
+                if (bar.GetType() == "medium")
+                    plot(DD_MedVetoed, corTof * 2 + 1000, bar.GetQdc());
 
+                if (bar.GetType() == "small")
+                    plot(DD_SmVetoed, corTof * 2 + 1000, bar.GetQdc());
+            }
+
+            plot(DD_DEBUGGING9, beta_start.GetLeftSide().GetTraceQdc(),
+                 beta_start.GetLeftSide().GetSignalToNoiseRatio());
+
+	    //adding HPGE energy info to vandle tree
+	    double HPGE_energy=-9999.0;
+            if (geEvts.size() !=0){
+                for (vector<ChanEvent *>::const_iterator itHPGE = geEvts.begin();
+                itHPGE != geEvts.end(); itHPGE++) {
+                    HPGE_energy = (*itHPGE)->GetCalEnergy();
+                }
+
+            }else{
+                HPGE_energy = -8888.0;
+            }
 
 #ifdef useroot
 	    vroot.tof   = corTof*2+1000;//to make identicle to damm output
@@ -311,7 +322,8 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    vroot.bsnrl = beta_start.GetLeftSide().GetSignalToNoiseRatio();
 	    vroot.bsnrr = beta_start.GetRightSide().GetSignalToNoiseRatio();
 	    vroot.cyc = 0;  /////////it.GetEventTime();
-	    vroot.bcyc = 0;  /////////itStart.GetEventTime();
+	    vroot.bcyc = 0;  /////////itStart.GetEventTime()
+	    vroot.HPGE = HPGE_energy;
 	    vroot.vid   = barLoc;
 	    vroot.vtype = barType;
 	    vroot.bid = startLoc;

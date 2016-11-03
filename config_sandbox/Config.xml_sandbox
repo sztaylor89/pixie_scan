@@ -918,7 +918,7 @@
       <TrapezoidalWalk unit="ns" value="60"/>
       <TraceDelay unit="ns" value="344"/>
       <TraceLength unit="ns" value="496"/>
-      <QdcCompression value="4.0"/>
+      <QdcCompression value="25.0"/>
     </Trace>
     
     <Fitting>
