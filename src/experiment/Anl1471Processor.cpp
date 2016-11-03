@@ -297,7 +297,8 @@ bool Anl1471Processor::Process(RawEvent &event) {
             plot(DD_DEBUGGING9, beta_start.GetLeftSide().GetTraceQdc(),
                  beta_start.GetLeftSide().GetSignalToNoiseRatio());
 
-            double HPGE_energy=-9999.0;
+	    //adding HPGE energy info to vandle tree
+	    double HPGE_energy=-9999.0;
             if (geEvts.size() !=0){
                 for (vector<ChanEvent *>::const_iterator itHPGE = geEvts.begin();
                 itHPGE != geEvts.end(); itHPGE++) {
@@ -322,7 +323,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 	    vroot.bsnrr = beta_start.GetRightSide().GetSignalToNoiseRatio();
 	    vroot.cyc = 0;  /////////it.GetEventTime();
 	    vroot.bcyc = 0;  /////////itStart.GetEventTime()
-        vroot.HPGE = HPGE_energy;
+	    vroot.HPGE = HPGE_energy;
 	    vroot.vid   = barLoc;
 	    vroot.vtype = barType;
 	    vroot.bid = startLoc;
