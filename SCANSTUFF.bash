@@ -1,7 +1,7 @@
 #!/bin/bash
 
-name="bbb"
-data="/scratch2/anl2015/FEB2015/135SB"
+name="PSvsPASS-PS"
+data="../ldf"
 
 rm -f $name.his $name.dat $name.drr $name.list $name.log
 
