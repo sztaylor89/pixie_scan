@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name="PSvsPASS-PS"
+name="tofOUT"
 data="../ldf"
 
 rm -f $name.his $name.dat $name.drr $name.list $name.log

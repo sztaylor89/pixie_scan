@@ -279,11 +279,17 @@ bool Anl1471Processor::Process(RawEvent &event) {
             //tape move veto cut damm
             bool tapeMove = TreeCorrelator::get()->place("TapeMove")->status();
             if (tapeMove == 0) { //plot only if tape is NOT moving
-                if (bar.GetType() == "medium")
-                    plot(DD_MedCTOFvQDC, corTof * 2 + 1000, bar.GetQdc());
-
-                if (bar.GetType() == "small")
-                    plot(DD_SmCTOFvQDC, corTof * 2 + 1000, bar.GetQdc());
+	      if (bar.GetType() == "medium"){
+		plot(DD_MedCTOFvQDC, corTof * 2 + 1000, bar.GetQdc());
+		if (corTof > 40 && corTof < 140 && bar.GetQdc() > 500){
+		  cout << corTof << endl;
+		  std::ofstream outfile;
+		  outfile.open("tof.txt", std::ios_base::app);
+		  outfile <<  corTof << endl;
+		}
+	      }
+	      if (bar.GetType() == "small")
+		plot(DD_SmCTOFvQDC, corTof * 2 + 1000, bar.GetQdc());
             }
 
             if (tapeMove == 1) { //plot only if tape is moving
