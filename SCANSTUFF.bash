@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name="tofOUT"
+name="aaa"
 data="../ldf"
 
 rm -f $name.his $name.dat $name.drr $name.list $name.log
