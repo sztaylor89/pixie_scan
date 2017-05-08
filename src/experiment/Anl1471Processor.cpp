@@ -316,7 +316,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
             }
 
 #ifdef useroot
-	    vroot.tof   = corTof*2+1000;//to make identicle to damm output
+	    vroot.tof   = corTof;
 	    vroot.qdc   = bar.GetQdc();
 	    vroot.snrl  = bar.GetLeftSide().GetSignalToNoiseRatio();
 	    vroot.snrr  = bar.GetRightSide().GetSignalToNoiseRatio();
@@ -338,7 +338,7 @@ bool Anl1471Processor::Process(RawEvent &event) {
 
 #ifdef useroot
 	    BETA->Fill(vroot.bqdcl,vroot.bsnrl);
-	    qdctof_->Fill(tof,bar.GetQdc());
+	    qdctof_->Fill(corTof,bar.GetQdc());
 	    qdc_ = bar.GetQdc();
 	    tof = tof;
 	    roottree1_->Fill();
